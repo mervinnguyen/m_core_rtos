@@ -10,13 +10,13 @@
 [![Toolchain](https://img.shields.io/badge/toolchain-arm--none--eabi--gcc-green?style=flat-square)](.)
 [![License](https://img.shields.io/badge/license-MIT-purple?style=flat-square)](LICENSE)
 
-[**📄 Full Documentation & Architecture Diagrams →**](https://your-handle.github.io/m-core-rtos)
+[**📄 Full Documentation & Architecture Diagrams →**](https://github.com/mervinnguyen/m_core_rtos.git)
 
 </div>
 
 ---
 
-A ground-up implementation of a preemptive real-time operating system targeting ARM Cortex-M microcontrollers. Implements round-robin, cooperative, and periodic schedulers with PendSV-based context switching, a thread control block subsystem, and binary semaphore synchronization — built directly on top of SysTick and NVIC hardware primitives.
+A ground-up implementation of a preemptive real-time operating system targeting ARM Cortex-M microcontrollers. Implements round-robin, cooperative, and periodic schedulers with PendSV-based context switching, a thread control block subsystem, and binary semaphore synchronization, built directly on top of SysTick and NVIC hardware primitives.
 
 ---
 
@@ -35,7 +35,7 @@ A ground-up implementation of a preemptive real-time operating system targeting 
 
 ## System Architecture
 
-The system is structured as four strict layers. Each layer has a single responsibility and communicates only with the layer directly below it — a dependency hierarchy that mirrors production-grade embedded OS design.
+The system is structured as four strict layers. Each layer has a single responsibility and communicates only with the layer directly below it, a dependency hierarchy that mirrors production-grade embedded OS design.
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -69,7 +69,7 @@ The system is structured as four strict layers. Each layer has a single responsi
 
 ## Scheduler Execution Flow
 
-SysTick fires at a fixed 1 ms interval. Scheduling logic runs in the SysTick ISR; the actual register swap is deferred to PendSV — the lowest-priority interrupt on the system — ensuring context switches never preempt device driver ISRs.
+SysTick fires at a fixed 1 ms interval. Scheduling logic runs in the SysTick ISR; the actual register swap is deferred to PendSV, the lowest-priority interrupt on the system, ensuring context switches never preempt device driver ISRs.
 
 ```
 SysTick IRQ (1ms)
