@@ -247,7 +247,7 @@ m-core-rtos/
 
 ```bash
 # Clone
-git clone https://github.com/your-handle/m-core-rtos.git
+git clone https://github.com/mervinnguyen/m_core_rtos.git
 cd m-core-rtos
 
 # Build with ARM toolchain
