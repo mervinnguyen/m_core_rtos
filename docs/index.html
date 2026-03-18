@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M-Core RTOS — Cortex-M Real-Time Operating System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --bg2: #0f1218;
+    --bg3: #161b24;
+    --border: #1e2736;
+    --border2: #2a3547;
+    --accent: #00d4aa;
+    --accent2: #0090ff;
+    --accent3: #ff6b35;
+    --amber: #f59e0b;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #64748b;
+    --green: #22c55e;
+    --purple: #a78bfa;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Space Grotesk', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.7;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 32px 120px;
+  }
+
+  .hero {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 40px;
+    margin-bottom: 48px;
+  }
+
+  .badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+  }
+
+  .badge-teal   { background: rgba(0,212,170,0.12);  color: var(--accent);  border: 1px solid rgba(0,212,170,0.25); }
+  .badge-blue   { background: rgba(0,144,255,0.12);  color: var(--accent2); border: 1px solid rgba(0,144,255,0.25); }
+  .badge-amber  { background: rgba(245,158,11,0.12); color: var(--amber);   border: 1px solid rgba(245,158,11,0.25); }
+  .badge-green  { background: rgba(34,197,94,0.12);  color: var(--green);   border: 1px solid rgba(34,197,94,0.25); }
+  .badge-purple { background: rgba(167,139,250,0.12);color: var(--purple);  border: 1px solid rgba(167,139,250,0.25); }
+  .badge-orange { background: rgba(255,107,53,0.12); color: var(--accent3); border: 1px solid rgba(255,107,53,0.25); }
+
+  h1 {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: 8px;
+    color: #fff;
+  }
+
+  h1 .accent { color: var(--accent); }
+
+  .subtitle {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text3);
+    margin-bottom: 20px;
+    letter-spacing: 0.04em;
+  }
+
+  .hero-desc {
+    font-size: 16px;
+    color: var(--text2);
+    max-width: 680px;
+    line-height: 1.8;
+  }
+
+  h2 {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin: 48px 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  h2::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
+  }
+
+  p { color: var(--text2); margin-bottom: 12px; }
+
+  .arch {
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 24px 0;
+    font-family: var(--mono);
+  }
+
+  .arch-header {
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .arch-header::before {
+    content: '▶';
+    font-size: 8px;
+    color: var(--accent);
+  }
+
+  .arch-body { padding: 0; }
+
+  .arch-layer {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .arch-layer:last-child { border-bottom: none; }
+
+  .arch-layer-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .arch-layer-label .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .arch-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .arch-item {
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+
+  .layer-app    { background: rgba(167,139,250,0.08); border-left: 3px solid var(--purple); }
+  .layer-kernel { background: rgba(0,212,170,0.05);   border-left: 3px solid var(--accent); }
+  .layer-driver { background: rgba(0,144,255,0.05);   border-left: 3px solid var(--accent2); }
+  .layer-hw     { background: rgba(245,158,11,0.05);  border-left: 3px solid var(--amber); }
+
+  .item-purple { background: rgba(167,139,250,0.1); color: var(--purple); border: 1px solid rgba(167,139,250,0.2); }
+  .item-teal   { background: rgba(0,212,170,0.1);   color: var(--accent); border: 1px solid rgba(0,212,170,0.2); }
+  .item-blue   { background: rgba(0,144,255,0.1);   color: var(--accent2);border: 1px solid rgba(0,144,255,0.2); }
+  .item-amber  { background: rgba(245,158,11,0.1);  color: var(--amber);  border: 1px solid rgba(245,158,11,0.2); }
+  .item-gray   { background: rgba(100,116,139,0.1); color: var(--text2);  border: 1px solid rgba(100,116,139,0.2); }
+
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    margin: 20px 0;
+  }
+
+  .flow-step {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text2);
+    white-space: nowrap;
+  }
+
+  .flow-step.active    { border-color: var(--accent);  color: var(--accent);  background: rgba(0,212,170,0.06); }
+  .flow-step.highlight { border-color: var(--accent3); color: var(--accent3); background: rgba(255,107,53,0.06); }
+
+  .flow-arrow {
+    color: var(--border2);
+    padding: 0 6px;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  pre {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px 24px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.8;
+    overflow-x: auto;
+    margin: 16px 0;
+  }
+
+  .kw { color: #7dd3fc; }
+  .ty { color: var(--accent); }
+  .cm { color: var(--text3); font-style: italic; }
+  .st { color: #fbbf24; }
+  .nm { color: var(--purple); }
+  .fn { color: var(--accent2); }
+  .op { color: var(--text3); }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+
+  .feature-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    transition: border-color 0.2s;
+  }
+
+  .feature-card:hover { border-color: var(--border2); }
+
+  .feature-icon {
+    font-size: 11px;
+    font-family: var(--mono);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    display: inline-block;
+  }
+
+  .feature-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .feature-desc {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  .sched-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 16px 0;
+    font-family: var(--mono);
+  }
+
+  .sched-table th {
+    text-align: left;
+    padding: 10px 16px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text3);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .sched-table td {
+    padding: 10px 16px;
+    border: 1px solid var(--border);
+    color: var(--text2);
+    vertical-align: top;
+  }
+
+  .sched-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .ctx-diagram {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0;
+    margin: 20px 0;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+
+  .ctx-task {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 16px;
+  }
+
+  .ctx-task-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .ctx-reg {
+    padding: 4px 8px;
+    border-radius: 3px;
+    margin-bottom: 4px;
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .reg-hw { background: rgba(0,144,255,0.08); color: var(--accent2); border: 1px solid rgba(0,144,255,0.15); }
+  .reg-sw { background: rgba(0,212,170,0.08); color: var(--accent);  border: 1px solid rgba(0,212,170,0.15); }
+
+  .ctx-middle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    gap: 8px;
+  }
+
+  .ctx-middle-label {
+    font-size: 10px;
+    color: var(--text3);
+    text-align: center;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .pendsv-box {
+    background: rgba(255,107,53,0.1);
+    border: 1px solid rgba(255,107,53,0.3);
+    border-radius: 6px;
+    padding: 10px 14px;
+    color: var(--accent3);
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 0.05em;
+  }
+
+  .note {
+    background: rgba(0,212,170,0.05);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-size: 13px;
+    color: var(--text2);
+  }
+
+  .note strong { color: var(--accent); font-weight: 600; }
+
+  .warn {
+    background: rgba(245,158,11,0.05);
+    border-left: 3px solid var(--amber);
+    border-radius: 0 6px 6px 0;
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-size: 13px;
+    color: var(--text2);
+  }
+
+  .warn strong { color: var(--amber); font-weight: 600; }
+
+  .tree {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px 24px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 2;
+  }
+
+  .tree-dir     { color: var(--accent2); }
+  .tree-file    { color: var(--text2); }
+  .tree-comment { color: var(--text3); font-style: italic; }
+  .tree-line    { color: var(--border2); }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 48px 0;
+  }
+
+  code {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: var(--accent);
+  }
+
+  ul { list-style: none; padding: 0; margin: 10px 0; }
+
+  ul li {
+    color: var(--text2);
+    padding: 3px 0 3px 18px;
+    position: relative;
+    font-size: 14px;
+  }
+
+  ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--text3);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hero">
+  <div class="badge-row">
+    <span class="badge badge-teal">ARM Cortex-M</span>
+    <span class="badge badge-blue">Bare Metal</span>
+    <span class="badge badge-amber">STM32</span>
+    <span class="badge badge-green">C · ASM</span>
+    <span class="badge badge-purple">RTOS</span>
+    <span class="badge badge-orange">Embedded Systems</span>
+  </div>
+
+  <h1><span class="accent">M-Core RTOS</span></h1>
+  <p class="subtitle">// A light weight Real-Time Operating System built from scratch on ARM Cortex-M</p>
+  <p class="hero-desc">
+    A ground-up implementation of a preemptive real-time operating system targeting ARM Cortex-M
+    microcontrollers. Implements round-robin, cooperative, and periodic schedulers with PendSV-based
+    context switching, a thread control block subsystem, and binary semaphore synchronization —
+    built directly on top of SysTick and NVIC hardware primitives.
+  </p>
+  <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
+    <a href="https://github.com/mervinnguyen/m_core_rtos"
+       style="font-family:var(--mono);font-size:12px;color:var(--accent2);border:1px solid rgba(0,144,255,0.3);background:rgba(0,144,255,0.08);padding:6px 14px;border-radius:4px;text-decoration:none;">
+      ⌥ View on GitHub
+    </a>
+    <a href="https://github.com/mervinnguyen/m_core_rtos/blob/main/README.md"
+       style="font-family:var(--mono);font-size:12px;color:var(--text3);border:1px solid var(--border);background:var(--bg3);padding:6px 14px;border-radius:4px;text-decoration:none;">
+      README.md
+    </a>
+  </div>
+</div>
+
+
+<!-- ARCHITECTURE -->
+<h2>System Architecture</h2>
+
+<p>The system is structured as four distinct layers. Each layer has a single responsibility and
+communicates only with the layer directly below it — a strict dependency hierarchy that mirrors
+production-grade embedded OS design.</p>
+
+<div class="arch">
+  <div class="arch-header">layered architecture — hardware to application</div>
+  <div class="arch-body">
+
+    <div class="arch-layer layer-app">
+      <div class="arch-layer-label">
+        <span class="dot" style="background:var(--purple)"></span>
+        <span style="color:var(--purple)">L4 — Application Layer</span>
+      </div>
+      <div class="arch-items">
+        <span class="arch-item item-purple">User Tasks / Threads</span>
+        <span class="arch-item item-purple">Application Logic</span>
+        <span class="arch-item item-purple">Semaphore Consumers</span>
+      </div>
+    </div>
+
+    <div class="arch-layer layer-kernel">
+      <div class="arch-layer-label">
+        <span class="dot" style="background:var(--accent)"></span>
+        <span style="color:var(--accent)">L3 — RTOS Kernel</span>
+      </div>
+      <div class="arch-items">
+        <span class="arch-item item-teal">Scheduler (RR / Coop / Periodic)</span>
+        <span class="arch-item item-teal">Context Switch Engine</span>
+        <span class="arch-item item-teal">TCB Manager</span>
+        <span class="arch-item item-teal">Semaphore / IPC</span>
+        <span class="arch-item item-teal">Kernel API (os_init / os_launch)</span>
+      </div>
+    </div>
+
+    <div class="arch-layer layer-driver">
+      <div class="arch-layer-label">
+        <span class="dot" style="background:var(--accent2)"></span>
+        <span style="color:var(--accent2)">L2 — Driver Layer</span>
+      </div>
+      <div class="arch-items">
+        <span class="arch-item item-blue">LED Driver (debug / task validation)</span>
+        <span class="arch-item item-blue">UART Driver (logging / observability)</span>
+        <span class="arch-item item-blue">Timebase — SysTick (scheduling clock)</span>
+      </div>
+    </div>
+
+    <div class="arch-layer layer-hw">
+      <div class="arch-layer-label">
+        <span class="dot" style="background:var(--amber)"></span>
+        <span style="color:var(--amber)">L1 — Cortex-M Hardware Primitives</span>
+      </div>
+      <div class="arch-items">
+        <span class="arch-item item-amber">SysTick — scheduler trigger</span>
+        <span class="arch-item item-amber">PendSV — context switch interrupt</span>
+        <span class="arch-item item-amber">NVIC — interrupt priority control</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="note">
+  <strong>Design Principle:</strong> SysTick, PendSV, and NVIC are the three hardware primitives
+  the entire kernel is built on. Every scheduling decision ultimately flows through these three
+  peripheral interfaces.
+</div>
+
+
+<!-- SCHEDULER FLOW -->
+<h2>Scheduler Execution Flow</h2>
+
+<p>Each scheduler tick is fully deterministic. SysTick fires at a fixed 1 ms interval, increments
+the system counter, triggers the scheduler decision, and defers the actual register swap to PendSV
+— the lowest-priority interrupt on the system, ensuring context switches never interrupt critical ISRs.</p>
+
+<div class="flow">
+  <div class="flow-step active">SysTick IRQ<br><span style="font-size:10px;opacity:0.6">1 ms</span></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">Increment sys_tick<br><span style="font-size:10px;opacity:0.6">volatile uint32_t</span></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">Scheduler evaluate<br><span style="font-size:10px;opacity:0.6">next TCB</span></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step highlight">Pend PendSV<br><span style="font-size:10px;opacity:0.6">SCB→ICSR</span></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step active">Context Switch<br><span style="font-size:10px;opacity:0.6">R4–R11 swap</span></div>
+</div>
+
+<p style="margin-top:16px;">The separation of scheduling logic (SysTick) from the stack swap (PendSV)
+is a critical Cortex-M design pattern — it allows the scheduler to run at a higher priority than the
+context switch, guaranteeing that interrupt latency is never inflated by task register saves.</p>
+
+
+<!-- CONTEXT SWITCHING -->
+<h2>Context Switching</h2>
+
+<p>The Cortex-M hardware exception mechanism saves a partial frame automatically on interrupt entry.
+The PendSV handler saves the remaining callee-saved registers manually, completing the full
+architectural context before switching the stack pointer to the next thread.</p>
+
+<div class="ctx-diagram">
+  <div class="ctx-task">
+    <div class="ctx-task-title" style="color:var(--text3)">Running Task — Save</div>
+    <div class="ctx-reg reg-hw"><span>R0–R3</span><span style="opacity:0.5">hw auto</span></div>
+    <div class="ctx-reg reg-hw"><span>R12</span><span style="opacity:0.5">hw auto</span></div>
+    <div class="ctx-reg reg-hw"><span>LR</span><span style="opacity:0.5">hw auto</span></div>
+    <div class="ctx-reg reg-hw"><span>PC</span><span style="opacity:0.5">hw auto</span></div>
+    <div class="ctx-reg reg-hw"><span>xPSR</span><span style="opacity:0.5">hw auto</span></div>
+    <div class="ctx-reg reg-sw"><span>R4–R11</span><span style="opacity:0.5">manual</span></div>
+    <div class="ctx-reg reg-sw"><span>SP (PSP)</span><span style="opacity:0.5">saved to TCB</span></div>
+  </div>
+
+  <div class="ctx-middle">
+    <div class="ctx-middle-label">trigger</div>
+    <div class="pendsv-box">PendSV<br>Handler</div>
+    <div class="ctx-middle-label">lowest priority<br>interrupt</div>
+  </div>
+
+  <div class="ctx-task">
+    <div class="ctx-task-title" style="color:var(--accent)">Next Task — Restore</div>
+    <div class="ctx-reg reg-sw"><span>SP (PSP)</span><span style="opacity:0.5">load from TCB</span></div>
+    <div class="ctx-reg reg-sw"><span>R4–R11</span><span style="opacity:0.5">manual pop</span></div>
+    <div class="ctx-reg reg-hw"><span>xPSR</span><span style="opacity:0.5">hw auto</span></div>
+    <div class="ctx-reg reg-hw"><span>PC</span><span style="opacity:0.5">hw auto</span></div>
+    <div class="ctx-reg reg-hw"><span>LR</span><span style="opacity:0.5">hw auto</span></div>
+    <div class="ctx-reg reg-hw"><span>R12</span><span style="opacity:0.5">hw auto</span></div>
+    <div class="ctx-reg reg-hw"><span>R0–R3</span><span style="opacity:0.5">hw auto</span></div>
+  </div>
+</div>
+
+<pre>
+<span class="cm">/* PendSV handler — naked function, no prologue/epilogue */</span>
+<span class="kw">__attribute__</span>((naked)) <span class="kw">void</span> <span class="fn">PendSV_Handler</span>(<span class="kw">void</span>) {
+    <span class="kw">__asm volatile</span> (
+        <span class="st">"MRS     R0, PSP            \n"</span>  <span class="cm">/* load PSP of running task */</span>
+        <span class="st">"STMDB   R0!, {R4-R11}      \n"</span>  <span class="cm">/* push callee-saved regs   */</span>
+        <span class="st">"LDR     R1, =currentTCB    \n"</span>
+        <span class="st">"LDR     R2, [R1]           \n"</span>
+        <span class="st">"STR     R0, [R2]           \n"</span>  <span class="cm">/* save new SP into TCB     */</span>
+        <span class="st">"BL      os_scheduler       \n"</span>  <span class="cm">/* select next task         */</span>
+        <span class="st">"LDR     R2, [R1]           \n"</span>
+        <span class="st">"LDR     R0, [R2]           \n"</span>  <span class="cm">/* restore SP from next TCB */</span>
+        <span class="st">"LDMIA   R0!, {R4-R11}      \n"</span>  <span class="cm">/* pop callee-saved regs    */</span>
+        <span class="st">"MSR     PSP, R0            \n"</span>
+        <span class="st">"BX      LR                 \n"</span>  <span class="cm">/* exception return          */</span>
+    );
+}
+</pre>
+
+
+<!-- TCB -->
+<h2>Thread Control Block</h2>
+
+<p>Each thread is fully described by its TCB. The stack pointer is always the first field — this
+ensures zero-offset access from assembly without any struct member arithmetic, a requirement for
+correct context switching from the PendSV handler.</p>
+
+<pre>
+<span class="kw">typedef enum</span> {
+    <span class="nm">THREAD_READY</span>   = <span class="nm">0x00</span>,
+    <span class="nm">THREAD_BLOCKED</span> = <span class="nm">0x01</span>,
+    <span class="nm">THREAD_SLEEP</span>   = <span class="nm">0x02</span>,
+} <span class="ty">thread_state_t</span>;
+
+<span class="kw">typedef struct</span> <span class="ty">tcb</span> {
+    <span class="kw">uint32_t</span>        *stack_ptr;   <span class="cm">/* MUST be first — accessed from asm */</span>
+    <span class="kw">uint32_t</span>         priority;    <span class="cm">/* scheduler priority (0 = highest)  */</span>
+    <span class="ty">thread_state_t</span>   state;       <span class="cm">/* READY | BLOCKED | SLEEP           */</span>
+    <span class="kw">uint32_t</span>         delay_ticks; <span class="cm">/* tick count until wake             */</span>
+    <span class="kw">struct</span> <span class="ty">tcb</span>      *next;        <span class="cm">/* circular linked list pointer      */</span>
+    <span class="kw">const char</span>      *name;        <span class="cm">/* debug identifier                  */</span>
+} <span class="ty">tcb_t</span>;
+</pre>
+
+<div class="warn">
+  <strong>Critical:</strong> Each thread stack must be pre-initialized with a fake exception frame
+  before <code>os_launch()</code>. The PC field is set to the thread function address; the xPSR
+  Thumb bit (bit 24) must be set. Without this, the first exception return crashes immediately.
+</div>
+
+
+<!-- SCHEDULERS -->
+<h2>Scheduler Implementations</h2>
+
+<table class="sched-table">
+  <thead>
+    <tr>
+      <th>Scheduler</th>
+      <th>Preemption</th>
+      <th>Trigger</th>
+      <th>Use Case</th>
+      <th>Key Tradeoff</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="color:var(--accent)">Round Robin</td>
+      <td style="color:var(--green)">Yes</td>
+      <td>SysTick (1 ms)</td>
+      <td>Equal-priority task fairness</td>
+      <td>Jitter; no priority differentiation</td>
+    </tr>
+    <tr>
+      <td style="color:var(--accent2)">Cooperative</td>
+      <td style="color:var(--accent3)">No</td>
+      <td>Explicit <code>os_yield()</code></td>
+      <td>Deterministic, low-overhead systems</td>
+      <td>Starvation if tasks don't yield</td>
+    </tr>
+    <tr>
+      <td style="color:var(--purple)">Periodic</td>
+      <td style="color:var(--green)">Yes</td>
+      <td>Hardware timer (configurable)</td>
+      <td>Hard real-time, control loops</td>
+      <td>Strict period budgeting required</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<!-- KERNEL API -->
+<h2>Kernel API</h2>
+
+<pre>
+<span class="cm">/* ── Kernel Lifecycle ──────────────────────────────────────── */</span>
+<span class="kw">void</span>    <span class="fn">os_init</span>    (<span class="kw">void</span>);                      <span class="cm">/* initialize kernel data structures       */</span>
+<span class="kw">void</span>    <span class="fn">os_launch</span>  (<span class="kw">void</span>);                      <span class="cm">/* start scheduler — never returns         */</span>
+
+<span class="cm">/* ── Thread Management ─────────────────────────────────────── */</span>
+<span class="kw">void</span>    <span class="fn">os_add_thread</span> (<span class="kw">void</span> (*fn)(<span class="kw">void</span>),
+                       <span class="kw">uint32_t</span> *stack,
+                       <span class="kw">uint32_t</span>  stack_size,
+                       <span class="kw">uint32_t</span>  priority);
+
+<span class="cm">/* ── Scheduling Primitives ─────────────────────────────────── */</span>
+<span class="kw">void</span>    <span class="fn">os_yield</span>   (<span class="kw">void</span>);                      <span class="cm">/* cooperative yield                       */</span>
+<span class="kw">void</span>    <span class="fn">os_sleep</span>   (<span class="kw">uint32_t</span> ticks);            <span class="cm">/* block for N ticks                       */</span>
+
+<span class="cm">/* ── Synchronization ───────────────────────────────────────── */</span>
+<span class="kw">void</span>    <span class="fn">os_sem_init</span>   (<span class="ty">semaphore_t</span> *s, <span class="kw">int</span> val);
+<span class="kw">void</span>    <span class="fn">os_sem_wait</span>   (<span class="ty">semaphore_t</span> *s);         <span class="cm">/* acquire — blocks if count == 0          */</span>
+<span class="kw">void</span>    <span class="fn">os_sem_signal</span> (<span class="ty">semaphore_t</span> *s);         <span class="cm">/* release — unblocks a waiting thread     */</span>
+</pre>
+
+
+<!-- FEATURES -->
+<h2>Feature Breakdown</h2>
+
+<div class="feature-grid">
+  <div class="feature-card">
+    <span class="feature-icon badge-teal">SysTick</span>
+    <div class="feature-title">1 ms System Timebase</div>
+    <p class="feature-desc">Configurable tick frequency drives the scheduler. Global
+    <code>volatile uint32_t sys_tick</code> counter provides consistent time reference for
+    sleep and timeout logic across all threads.</p>
+  </div>
+  <div class="feature-card">
+    <span class="feature-icon badge-orange">PendSV</span>
+    <div class="feature-title">Deferred Context Switching</div>
+    <p class="feature-desc">Context switches are deferred to PendSV — lowest-priority exception
+    on Cortex-M. Guarantees ISR latency is never inflated by task register saves mid-interrupt.</p>
+  </div>
+  <div class="feature-card">
+    <span class="feature-icon badge-purple">TCB</span>
+    <div class="feature-title">Thread Control Blocks</div>
+    <p class="feature-desc">Circular linked list of TCBs. Each entry tracks stack pointer, state,
+    delay counter, and priority. Stack-pointer-first layout enables zero-offset assembly access.</p>
+  </div>
+  <div class="feature-card">
+    <span class="feature-icon badge-green">IPC</span>
+    <div class="feature-title">Binary Semaphores</div>
+    <p class="feature-desc">Counting semaphore implementation protects shared resources (UART,
+    GPIO banks). Blocking <code>sem_wait</code> transitions the calling thread to BLOCKED without
+    busy-waiting.</p>
+  </div>
+  <div class="feature-card">
+    <span class="feature-icon badge-blue">NVIC</span>
+    <div class="feature-title">Interrupt Priority Control</div>
+    <p class="feature-desc">PendSV configured at lowest NVIC priority (255). SysTick at highest.
+    Ensures the context switch never preempts device driver ISRs or time-critical interrupt handlers.</p>
+  </div>
+  <div class="feature-card">
+    <span class="feature-icon badge-amber">UART</span>
+    <div class="feature-title">Runtime Observability</div>
+    <p class="feature-desc">UART logging layer provides scheduler trace output. Task switches,
+    semaphore acquisitions, and sleep events can be emitted over serial without impacting
+    timing behavior.</p>
+  </div>
+</div>
+
+
+<!-- BOOT -->
+<h2>Boot &amp; Launch Sequence</h2>
+
+<p>The RTOS launch takes control from <code>main()</code> immediately after thread registration.
+It initializes the first task's PSP, drops to unprivileged thread mode, and triggers the first
+context switch — at which point the kernel never returns to <code>main()</code>.</p>
+
+<div class="flow" style="flex-wrap:wrap;gap:6px;">
+  <div class="flow-step">Reset Handler</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">Stack Init</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">Vector Table</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step active">main()</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step active">os_init()</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step active">os_add_thread()</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step highlight">os_launch() ✦</div>
+</div>
+
+<p style="margin-top:8px;font-size:13px;color:var(--text3)">
+  ✦ os_launch() does not return. Execution continues inside the thread pool.
+</p>
+
+
+<!-- FILE STRUCTURE -->
+<h2>Repository Structure</h2>
+
+<div class="tree">
+<span class="tree-dir">m-core-rtos/</span><br>
+<span class="tree-line">├── </span><span class="tree-dir">kernel/</span><br>
+<span class="tree-line">│   ├── </span><span class="tree-file">os_core.c</span><span class="tree-comment">              # os_init, os_launch, thread management</span><br>
+<span class="tree-line">│   ├── </span><span class="tree-file">os_core.h</span><br>
+<span class="tree-line">│   ├── </span><span class="tree-file">scheduler_rr.c</span><span class="tree-comment">         # round-robin scheduler</span><br>
+<span class="tree-line">│   ├── </span><span class="tree-file">scheduler_coop.c</span><span class="tree-comment">       # cooperative scheduler</span><br>
+<span class="tree-line">│   ├── </span><span class="tree-file">scheduler_periodic.c</span><span class="tree-comment">   # periodic scheduler</span><br>
+<span class="tree-line">│   ├── </span><span class="tree-file">pendsv_handler.s</span><span class="tree-comment">       # assembly context switch</span><br>
+<span class="tree-line">│   ├── </span><span class="tree-file">tcb.h</span><span class="tree-comment">                  # thread control block definition</span><br>
+<span class="tree-line">│   └── </span><span class="tree-file">semaphore.c/h</span><span class="tree-comment">          # synchronization primitives</span><br>
+<span class="tree-line">│</span><br>
+<span class="tree-line">├── </span><span class="tree-dir">drivers/</span><br>
+<span class="tree-line">│   ├── </span><span class="tree-file">led.c/h</span><span class="tree-comment">                # GPIO LED — task debug output</span><br>
+<span class="tree-line">│   ├── </span><span class="tree-file">uart.c/h</span><span class="tree-comment">               # UART logging layer</span><br>
+<span class="tree-line">│   └── </span><span class="tree-file">timebase.c/h</span><span class="tree-comment">           # SysTick config + sys_tick counter</span><br>
+<span class="tree-line">│</span><br>
+<span class="tree-line">├── </span><span class="tree-dir">app/</span><br>
+<span class="tree-line">│   └── </span><span class="tree-file">main.c</span><span class="tree-comment">                 # thread definitions + os_launch entry</span><br>
+<span class="tree-line">│</span><br>
+<span class="tree-line">├── </span><span class="t
