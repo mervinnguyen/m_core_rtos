@@ -7,6 +7,7 @@ int main(void){
 
 	while(1){
 		led_on();
+		}
 		for(int i = 0; i < 90000; i++){			//create short dealy by looping 90,000 times
 		}
 		led_off();

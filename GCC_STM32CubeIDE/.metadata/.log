@@ -46,3 +46,9 @@ COM4
 
 !ENTRY org.eclipse.cdt.core 1 0 2026-03-22 19:23:25.347
 !MESSAGE Indexed '1_uart_driver' (4 sources, 61 headers) in 0.396 sec: 2,679 declarations; 3,741 references; 3 unresolved inclusions; 30 syntax errors; 581 unresolved names (8.3%)
+
+!ENTRY com.st.stm32cube.ide.mcu.debug.launch 2 0 2026-03-22 20:21:31.220
+!MESSAGE Won't launch debug session since we failed to locate the binary.
+
+!ENTRY com.st.stm32cube.ide.mcu.debug.launch 2 0 2026-03-22 20:25:11.404
+!MESSAGE Won't launch debug session since we failed to locate the binary.

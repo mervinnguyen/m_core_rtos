@@ -1,10 +1,4 @@
-19:53:38 **** Clean-only build of configuration Debug for project 1_uart_driver ****
-make -j24 clean 
-rm -rf ./Startup/startup_stm32f411retx.d ./Startup/startup_stm32f411retx.o
-rm -rf ./Src/led.cyclo ./Src/led.d ./Src/led.o ./Src/led.su ./Src/main.cyclo ./Src/main.d ./Src/main.o ./Src/main.su ./Src/syscalls.cyclo ./Src/syscalls.d ./Src/syscalls.o ./Src/syscalls.su ./Src/sysmem.cyclo ./Src/sysmem.d ./Src/sysmem.o ./Src/sysmem.su
-rm -rf 0_led_driver.elf 0_led_driver.list 0_led_driver.map default.size.stdout
- 
-19:53:38 **** Build of configuration Debug for project 1_uart_driver ****
+00:13:41 **** Incremental Build of configuration Debug for project 1_uart_driver ****
 make -j24 all 
 arm-none-eabi-gcc -mcpu=cortex-m4 -g3 -DDEBUG -c -x assembler-with-cpp -MMD -MP -MF"Startup/startup_stm32f411retx.d" -MT"Startup/startup_stm32f411retx.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Startup/startup_stm32f411retx.o" "../Startup/startup_stm32f411retx.s"
 arm-none-eabi-gcc "../Src/led.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F411xE -c -I../Inc -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Include" -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Device/ST/STM32F4xx/Include" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/led.d" -MT"Src/led.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/led.o"
@@ -12,13 +6,33 @@ arm-none-eabi-gcc "../Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F411xE -
 arm-none-eabi-gcc "../Src/syscalls.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F411xE -c -I../Inc -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Include" -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Device/ST/STM32F4xx/Include" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/syscalls.d" -MT"Src/syscalls.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/syscalls.o"
 arm-none-eabi-gcc "../Src/sysmem.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F411xE -c -I../Inc -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Include" -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Device/ST/STM32F4xx/Include" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/sysmem.d" -MT"Src/sysmem.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/sysmem.o"
 arm-none-eabi-gcc "../Src/uart.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F411xE -c -I../Inc -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Include" -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Device/ST/STM32F4xx/Include" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/uart.d" -MT"Src/uart.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/uart.o"
-../Src/uart.c: In function 'uart_tx_init':
-../Src/uart.c:19:15: error: 'GPIO_TypeDef' has no member named 'AF07'
-   19 |         GPIOA -> AF07 =
-      |               ^~
-../Src/uart.c:20:1: error: expected expression before '}' token
-   20 | }
-      | ^
-make: *** [Src/subdir.mk:31: Src/uart.o] Error 1
-make: *** Waiting for unfinished jobs....
-"make -j24 all" terminated with exit code 2. Build might be incomplete.
+arm-none-eabi-gcc -o "1_uart_driver.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\mervi\OneDrive\Documents\m_core_rtos\GCC_STM32CubeIDE\1_uart_driver\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="1_uart_driver.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: 1_uart_driver.elf
+ 
+arm-none-eabi-size  1_uart_driver.elf 
+arm-none-eabi-objdump -h -S 1_uart_driver.elf  > "1_uart_driver.list"
+   text	   data	    bss	    dec	    hex	filename
+   5336	     92	   1900	   7328	   1ca0	1_uart_driver.elf
+Finished building: default.size.stdout
+ 
+Finished building: 1_uart_driver.list
+ 
+00:14:14 **** Incremental Build of configuration Debug for project 1_uart_driver ****
+make -j24 all 
+arm-none-eabi-gcc -mcpu=cortex-m4 -g3 -DDEBUG -c -x assembler-with-cpp -MMD -MP -MF"Startup/startup_stm32f411retx.d" -MT"Startup/startup_stm32f411retx.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Startup/startup_stm32f411retx.o" "../Startup/startup_stm32f411retx.s"
+arm-none-eabi-gcc "../Src/led.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F411xE -c -I../Inc -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Include" -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Device/ST/STM32F4xx/Include" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/led.d" -MT"Src/led.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/led.o"
+arm-none-eabi-gcc "../Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F411xE -c -I../Inc -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Include" -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Device/ST/STM32F4xx/Include" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/main.d" -MT"Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/main.o"
+arm-none-eabi-gcc "../Src/syscalls.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F411xE -c -I../Inc -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Include" -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Device/ST/STM32F4xx/Include" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/syscalls.d" -MT"Src/syscalls.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/syscalls.o"
+arm-none-eabi-gcc "../Src/sysmem.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F411xE -c -I../Inc -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Include" -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Device/ST/STM32F4xx/Include" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/sysmem.d" -MT"Src/sysmem.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/sysmem.o"
+arm-none-eabi-gcc "../Src/uart.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F411xE -c -I../Inc -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Include" -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Device/ST/STM32F4xx/Include" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/uart.d" -MT"Src/uart.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/uart.o"
+arm-none-eabi-gcc -o "1_uart_driver.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\mervi\OneDrive\Documents\m_core_rtos\GCC_STM32CubeIDE\1_uart_driver\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="1_uart_driver.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: 1_uart_driver.elf
+ 
+arm-none-eabi-size  1_uart_driver.elf 
+arm-none-eabi-objdump -h -S 1_uart_driver.elf  > "1_uart_driver.list"
+   text	   data	    bss	    dec	    hex	filename
+   5336	     92	   1900	   7328	   1ca0	1_uart_driver.elf
+Finished building: default.size.stdout
+ 
+Finished building: 1_uart_driver.list
+ 

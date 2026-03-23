@@ -1,0 +1,21 @@
+
+//header files
+#include "led.h"
+#include "uart.h"
+int main(void){
+	led_init();
+
+	while(1){
+		led_on();
+		uart_tx_init();
+
+		while(1){
+			printf("Hello from STM32F4....\n\r");
+		}
+		for(int i = 0; i < 90000; i++){			//create short dealy by looping 90,000 times
+		}
+		led_off();
+		for(int i = 0; i < 90000; i++){
+		}
+	}
+}
