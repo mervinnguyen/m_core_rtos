@@ -100,3 +100,30 @@ Command-line arguments:  -os win32 -ws win32 -arch x86_64 -data file:/C:/Users/m
 
 !ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-03-21 22:03:10.079
 !MESSAGE port: 
+
+!ENTRY org.eclipse.ui.ide 4 4 2026-03-21 22:15:00.342
+!MESSAGE Problems saving workspace
+
+!ENTRY org.eclipse.ui.ide 2 1 2026-03-21 22:15:00.344
+!MESSAGE Problems occurred while trying to save the state of the workbench.
+!SUBENTRY 1 org.eclipse.core.resources 2 234 2026-03-21 22:15:00.344
+!MESSAGE The project description file (.project) for '0_led_driver' was missing.  This file contains important information about the project.  A new project description file has been created, but some information about the project may have been lost.
+!SESSION 2026-03-21 22:15:02.671 -----------------------------------------------
+eclipse.buildId=Version 2.1.1
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2026-03-21 22:15:05.756
+!MESSAGE Log4j2 initialized with config file C:\Users\mervi\OneDrive\Documents\m_core_rtos\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2026-03-21 22:15:09.528
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-03-21 22:15:10.400
+!MESSAGE Executed PowerShell command powershell.exe -Command "Get-CimInstance -ClassName Win32_SerialPort | Select-Object -ExpandProperty DeviceID":
+
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-03-21 22:15:10.401
+!MESSAGE port: 
