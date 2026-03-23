@@ -20,3 +20,29 @@ Command-line arguments:  -os win32 -ws win32 -arch x86_64
 
 !ENTRY org.eclipse.cdt.core 1 0 2026-03-21 22:19:08.220
 !MESSAGE Indexed '0_led_driver' (3 sources, 53 headers) in 0.483 sec: 1,954 declarations; 2,862 references; 0 unresolved inclusions; 1 syntax errors; 2 unresolved names (0.042%)
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-03-22 19:12:47.482
+!MESSAGE Executed PowerShell command powershell.exe -Command "Get-CimInstance -ClassName Win32_SerialPort | Select-Object -ExpandProperty DeviceID":
+COM4
+
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-03-22 19:12:47.483
+!MESSAGE port: COM4
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-03-22 19:13:23.013
+!MESSAGE Executed PowerShell command powershell.exe -Command "Get-CimInstance -ClassName Win32_SerialPort | Select-Object -ExpandProperty DeviceID":
+
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-03-22 19:13:23.014
+!MESSAGE port: 
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-03-22 19:13:43.051
+!MESSAGE Executed PowerShell command powershell.exe -Command "Get-CimInstance -ClassName Win32_SerialPort | Select-Object -ExpandProperty DeviceID":
+COM4
+
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-03-22 19:13:43.052
+!MESSAGE port: COM4
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-22 19:23:25.347
+!MESSAGE Indexed '1_uart_driver' (4 sources, 61 headers) in 0.396 sec: 2,679 declarations; 3,741 references; 3 unresolved inclusions; 30 syntax errors; 581 unresolved names (8.3%)
