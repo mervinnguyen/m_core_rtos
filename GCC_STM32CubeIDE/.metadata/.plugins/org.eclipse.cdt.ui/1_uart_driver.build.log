@@ -1,4 +1,4 @@
-00:14:14 **** Incremental Build of configuration Debug for project 1_uart_driver ****
+02:34:50 **** Incremental Build of configuration Debug for project 1_uart_driver ****
 make -j24 all 
 arm-none-eabi-gcc -mcpu=cortex-m4 -g3 -DDEBUG -c -x assembler-with-cpp -MMD -MP -MF"Startup/startup_stm32f411retx.d" -MT"Startup/startup_stm32f411retx.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Startup/startup_stm32f411retx.o" "../Startup/startup_stm32f411retx.s"
 arm-none-eabi-gcc "../Src/led.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F411xE -c -I../Inc -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Include" -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Device/ST/STM32F4xx/Include" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/led.d" -MT"Src/led.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/led.o"
@@ -18,5 +18,5 @@ Finished building: default.size.stdout
 Finished building: 1_uart_driver.list
  
 
-00:14:14 Build Finished. 0 errors, 0 warnings. (took 574ms)
+02:34:51 Build Finished. 0 errors, 0 warnings. (took 597ms)
 

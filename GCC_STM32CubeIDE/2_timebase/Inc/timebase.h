@@ -1,0 +1,5 @@
+#ifndef __TIMEBASE_H__
+#define __TIMEBASE_H__
+
+#include <stdint.h>
+#endif

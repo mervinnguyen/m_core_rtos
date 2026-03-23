@@ -1,0 +1,4 @@
+../Src/timebase.c:14:6:tick_increment	4	static
+../Src/timebase.c:18:10:get_tick	4	static,ignoring_inline_asm
+../Src/timebase.c:26:6:timebase_init	4	static,ignoring_inline_asm
+../Src/timebase.c:46:6:SysTick_Handler	8	static
