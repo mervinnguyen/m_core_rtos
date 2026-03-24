@@ -116,3 +116,25 @@ COM4
 
 !ENTRY org.eclipse.cdt.core 1 0 2026-03-23 02:44:05.260
 !MESSAGE Indexed '2_timebase' (6 sources, 67 headers) in 0.316 sec: 3,275 declarations; 5,482 references; 0 unresolved inclusions; 1 syntax errors; 2 unresolved names (0.023%)
+!SESSION 2026-03-24 01:29:47.686 -----------------------------------------------
+eclipse.buildId=Version 2.1.1
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY org.eclipse.core.resources 2 10035 2026-03-24 01:31:55.449
+!MESSAGE The workspace exited with unsaved changes in the previous session; refreshing workspace to recover changes.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2026-03-24 01:31:57.788
+!MESSAGE Log4j2 initialized with config file C:\Users\mervi\OneDrive\Documents\m_core_rtos\GCC_STM32CubeIDE\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2026-03-24 01:32:03.787
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-03-24 01:32:04.647
+!MESSAGE Executed PowerShell command powershell.exe -Command "Get-CimInstance -ClassName Win32_SerialPort | Select-Object -ExpandProperty DeviceID":
+
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-03-24 01:32:04.648
+!MESSAGE port: 
