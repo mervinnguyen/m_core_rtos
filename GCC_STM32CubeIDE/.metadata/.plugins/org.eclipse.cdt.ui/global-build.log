@@ -1,14 +1,28 @@
-01:55:43 **** Incremental Build of configuration Debug for project 2_timebase ****
+02:20:17 **** Incremental Build of configuration Debug for project 3_blocking_code ****
 make -j24 all 
-arm-none-eabi-gcc "../Src/timebase.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F411xE -c -I../Inc -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Include" -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Device/ST/STM32F4xx/Include" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/timebase.d" -MT"Src/timebase.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/timebase.o"
-arm-none-eabi-gcc -o "2_timebase.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\mervi\OneDrive\Documents\m_core_rtos\GCC_STM32CubeIDE\2_timebase\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="2_timebase.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: 2_timebase.elf
+arm-none-eabi-gcc "../Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F411xE -c -I../Inc -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Include" -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Device/ST/STM32F4xx/Include" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/main.d" -MT"Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/main.o"
+arm-none-eabi-gcc -o "3_blocking_code.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\mervi\OneDrive\Documents\m_core_rtos\GCC_STM32CubeIDE\3_blocking_code\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="3_blocking_code.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: 3_blocking_code.elf
  
-arm-none-eabi-size  2_timebase.elf 
-arm-none-eabi-objdump -h -S 2_timebase.elf  > "2_timebase.list"
+arm-none-eabi-size  3_blocking_code.elf 
+arm-none-eabi-objdump -h -S 3_blocking_code.elf  > "3_blocking_code.list"
    text	   data	    bss	    dec	    hex	filename
-   5384	     96	   1904	   7384	   1cd8	2_timebase.elf
+   5756	     96	   1912	   7764	   1e54	3_blocking_code.elf
 Finished building: default.size.stdout
  
-Finished building: 2_timebase.list
+Finished building: 3_blocking_code.list
+ 
+02:20:39 **** Incremental Build of configuration Debug for project 3_blocking_code ****
+make -j24 all 
+arm-none-eabi-gcc "../Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F411xE -c -I../Inc -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Include" -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Device/ST/STM32F4xx/Include" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/main.d" -MT"Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/main.o"
+arm-none-eabi-gcc -o "3_blocking_code.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\mervi\OneDrive\Documents\m_core_rtos\GCC_STM32CubeIDE\3_blocking_code\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="3_blocking_code.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: 3_blocking_code.elf
+ 
+arm-none-eabi-size  3_blocking_code.elf 
+arm-none-eabi-objdump -h -S 3_blocking_code.elf  > "3_blocking_code.list"
+   text	   data	    bss	    dec	    hex	filename
+   5756	     96	   1912	   7764	   1e54	3_blocking_code.elf
+Finished building: default.size.stdout
+ 
+Finished building: 3_blocking_code.list
  

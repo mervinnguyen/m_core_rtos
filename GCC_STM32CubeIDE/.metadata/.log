@@ -138,3 +138,29 @@ Command-line arguments:  -os win32 -ws win32 -arch x86_64
 
 !ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-03-24 01:32:04.648
 !MESSAGE port: 
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-03-24 02:01:52.344
+!MESSAGE Executed PowerShell command powershell.exe -Command "Get-CimInstance -ClassName Win32_SerialPort | Select-Object -ExpandProperty DeviceID":
+COM4
+
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-03-24 02:01:52.345
+!MESSAGE port: COM4
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-03-24 02:02:27.253
+!MESSAGE Executed PowerShell command powershell.exe -Command "Get-CimInstance -ClassName Win32_SerialPort | Select-Object -ExpandProperty DeviceID":
+
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-03-24 02:02:27.253
+!MESSAGE port: 
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-03-24 02:02:29.299
+!MESSAGE Executed PowerShell command powershell.exe -Command "Get-CimInstance -ClassName Win32_SerialPort | Select-Object -ExpandProperty DeviceID":
+COM4
+
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-03-24 02:02:29.300
+!MESSAGE port: COM4
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-03-24 02:16:01.152
+!MESSAGE Indexed '3_blocking_code' (6 sources, 67 headers) in 0.619 sec: 3,282 declarations; 5,500 references; 0 unresolved inclusions; 1 syntax errors; 2 unresolved names (0.023%)
