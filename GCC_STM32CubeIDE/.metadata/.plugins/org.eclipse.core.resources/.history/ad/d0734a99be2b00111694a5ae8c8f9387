@@ -2,7 +2,6 @@
 #include "stm32f4xx.h"
 
 #define ONE_SEC_LOAD 	16000000
-
 #define CTRL_ENABLE		(1u << 0)
 #define CTRL_TICKINT	(1u << 1)
 #define CTRL_CLCKSRC	(1u << 2)
