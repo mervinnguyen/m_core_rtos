@@ -1,0 +1,17 @@
+03:19:10 **** Incremental Build of configuration Debug for project 4_blocking_code2 ****
+make -j24 all 
+arm-none-eabi-gcc "../Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F411xE -c -I../Inc -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Include" -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Device/ST/STM32F4xx/Include" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/main.d" -MT"Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/main.o"
+arm-none-eabi-gcc -o "4_blocking_code2.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\mervi\OneDrive\Documents\m_core_rtos\GCC_STM32CubeIDE\4_blocking_code2\STM32F411RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="4_blocking_code2.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: 4_blocking_code2.elf
+ 
+arm-none-eabi-size  4_blocking_code2.elf 
+arm-none-eabi-objdump -h -S 4_blocking_code2.elf  > "4_blocking_code2.list"
+   text	   data	    bss	    dec	    hex	filename
+   5860	     96	   1912	   7868	   1ebc	4_blocking_code2.elf
+Finished building: default.size.stdout
+ 
+Finished building: 4_blocking_code2.list
+ 
+
+03:19:10 Build Finished. 0 errors, 0 warnings. (took 411ms)
+
