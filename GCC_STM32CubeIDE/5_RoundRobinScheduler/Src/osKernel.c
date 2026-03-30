@@ -106,6 +106,80 @@ void osKernelLaunch(uint32_t quanta){
 	/*Launch scheduler */
 	osSchedulerLaunch();
 }
+
+/*When exception occurs there registers are automatically saved onto the stack :
+ * r0, r1, r2, r3, lr, pc, psr*/
+
+__attribute__((naked)) void SysTick_Handler(void){
+	/* SUSPEND CURRENT THREAD*/
+	/* Disable global interrupt*/
+	__asm("CPSID	I");
+
+	/* Save r4, r5, r6, r7, r8, r9, r10, r11*/
+	__asm("PUSH {R4-R11}");
+
+	/*Load address of currentPt into r0*/
+	__asm("LDR R0 = currentPt");
+
+	/*Load r1 from address equals r0, i.e. r1 = currentPt*/
+	__asm("LDR R1,[R0]");
+
+	/*Store Cortex-M SP at address equals r1, i.e. SP into tcb */
+	__asm("STR SP, [R1]");
+
+	/* CHOOSE NEXT THREAD*/
+
+	/* Load r1 from location 4bytes above address r1, i.e r1 = currentPt->next*/
+	__asm("LDR R1, [R1, $4]");
+
+	/*Store r1 at address equals r0, i.e. currentPt = r1*/
+	__asm("STR R1, [R0]");
+
+	/*Load Cortex-M SP from address equals r1, i.e. SP = currentPt->stackPt*/
+	__asm("LDR SP, [R1]");
+
+	/*Restore r4, r5, r6, r7, r8, r9, r10, r11*/
+	__asm("POP {R4-R11}");
+
+	/*Enable global interrupts*/
+	__asm("CPSIE	I");
+
+	/*Return from subroutine and restore r0, r1, r2, r3, lr, pc, psr*/
+	__asm("BX	LR");
+}
+
+void osSchedulerLaunch(void){
+	/*Load address of currentPt into R0*/
+	__asm("LDR R0, = currentPt");
+
+	/*Load r2 from address equals r0, r2 = currentPt*/
+	__asm("LDR R2, [r0]");
+
+	/*Load Cortex-M SP from address equals R2, i.e. SP = currentPt -> stackPt*/
+	__asm("LDR SP, [R2]");
+
+	/*Restore r4, r5, r6, r7, r8, r9, r10, r11*/
+	__asm("POP {R4-R11}");
+
+	/*Restore r0, r1, r2, r3*/
+	__asm("POP {R0-R3}");
+
+	/*Skip LR and PSR*/
+	__asm("ADD SP, SP, #4");
+
+	/*Create a new start location by popping LR*/
+	__asm("POP {LR}");
+
+	/*Skip PSR by adding 4 to SP*/
+	__asm("ADD SP, SP, #4");
+
+	/*Enable global interrupts*/
+	__asm("CPSIE	I");
+
+	/*Return from exception*/
+	__asm("BX	LR");
+}
+
 int main(void){
 
 }
