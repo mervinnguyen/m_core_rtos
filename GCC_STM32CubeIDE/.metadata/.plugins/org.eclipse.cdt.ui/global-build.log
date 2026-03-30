@@ -68,3 +68,130 @@ Finished building: default.size.stdout
  
 Finished building: 4_blocking_code2.list
  
+19:05:39 **** Building Selected Files of configuration Debug for project 5_RoundRobinScheduler ****
+Info: Internal Builder is used for build
+arm-none-eabi-gcc "..\\Src\\osKernel.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F411xE -c -I../Inc "-IC:\\Users\\mervi\\OneDrive\\Documents\\m_core_rtos\\GCC_STM32CubeIDE\\0_led_driver\\chip_headers\\Include" "-IC:\\Users\\mervi\\OneDrive\\Documents\\m_core_rtos\\GCC_STM32CubeIDE\\0_led_driver\\chip_headers\\Device\\ST\\STM32F4xx\\Include" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src\\osKernel.o" 
+..\Src\osKernel.c: In function 'osKernelAddThreads':
+..\Src\osKernel.c:55:17: error: 'tcbType' {aka 'struct tcb'} has no member named 'nextPt'; did you mean 'next'?
+   55 |         tcbs[0].nextPt = &tcbs[1];
+      |                 ^~~~~~
+      |                 next
+..\Src\osKernel.c:56:17: error: 'tcbType' {aka 'struct tcb'} has no member named 'nextPt'; did you mean 'next'?
+   56 |         tcbs[1].nextPt = &tcbs[2];
+      |                 ^~~~~~
+      |                 next
+..\Src\osKernel.c:57:17: error: 'tcbType' {aka 'struct tcb'} has no member named 'nextPt'; did you mean 'next'?
+   57 |         tcbs[2].nextPt = &tcbs[0];
+      |                 ^~~~~~
+      |                 next
+..\Src\osKernel.c: In function 'osKernelInit':
+..\Src\osKernel.c:84:9: error: 'MILLIS_PRESCALER' undeclared (first use in this function); did you mean 'MILLIS_PRESCALERL'?
+   84 |         MILLIS_PRESCALER = (BUS_FREQ/1000);
+      |         ^~~~~~~~~~~~~~~~
+      |         MILLIS_PRESCALERL
+..\Src\osKernel.c:84:9: note: each undeclared identifier is reported only once for each function it appears in
+..\Src\osKernel.c:84:29: error: 'BUS_FREQ' undeclared (first use in this function); did you mean 'BUS_FREQUENCY'?
+   84 |         MILLIS_PRESCALER = (BUS_FREQ/1000);
+      |                             ^~~~~~~~
+      |                             BUS_FREQUENCY
+..\Src\osKernel.c: In function 'osKernelLaunch':
+..\Src\osKernel.c:95:37: error: 'MILLIS_PRESCALER' undeclared (first use in this function); did you mean 'MILLIS_PRESCALERL'?
+   95 |         SysTick -> LOAD = (quanta * MILLIS_PRESCALER) - 1;
+      |                                     ^~~~~~~~~~~~~~~~
+      |                                     MILLIS_PRESCALERL
+..\Src\osKernel.c:107:9: error: implicit declaration of function 'osSchedulerLaunch' [-Wimplicit-function-declaration]
+  107 |         osSchedulerLaunch();
+      |         ^~~~~~~~~~~~~~~~~
+..\Src\osKernel.c: At top level:
+..\Src\osKernel.c:151:6: warning: conflicting types for 'osSchedulerLaunch'; have 'void(void)'
+  151 | void osSchedulerLaunch(void){
+      |      ^~~~~~~~~~~~~~~~~
+..\Src\osKernel.c:107:9: note: previous implicit declaration of 'osSchedulerLaunch' with type 'void(void)'
+  107 |         osSchedulerLaunch();
+      |         ^~~~~~~~~~~~~~~~~
+19:11:41 **** Building Selected Files of configuration Debug for project 5_RoundRobinScheduler ****
+Info: Internal Builder is used for build
+arm-none-eabi-gcc "..\\Src\\osKernel.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F411xE -c -I../Inc "-IC:\\Users\\mervi\\OneDrive\\Documents\\m_core_rtos\\GCC_STM32CubeIDE\\0_led_driver\\chip_headers\\Include" "-IC:\\Users\\mervi\\OneDrive\\Documents\\m_core_rtos\\GCC_STM32CubeIDE\\0_led_driver\\chip_headers\\Device\\ST\\STM32F4xx\\Include" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src\\osKernel.o" 
+..\Src\osKernel.c: In function 'osKernelLaunch':
+..\Src\osKernel.c:107:9: error: implicit declaration of function 'osSchedulerLaunch' [-Wimplicit-function-declaration]
+  107 |         osSchedulerLaunch();
+      |         ^~~~~~~~~~~~~~~~~
+..\Src\osKernel.c: At top level:
+..\Src\osKernel.c:151:6: warning: conflicting types for 'osSchedulerLaunch'; have 'void(void)'
+  151 | void osSchedulerLaunch(void){
+      |      ^~~~~~~~~~~~~~~~~
+..\Src\osKernel.c:107:9: note: previous implicit declaration of 'osSchedulerLaunch' with type 'void(void)'
+  107 |         osSchedulerLaunch();
+      |         ^~~~~~~~~~~~~~~~~
+19:14:20 **** Building Selected Files of configuration Debug for project 5_RoundRobinScheduler ****
+Info: Internal Builder is used for build
+arm-none-eabi-gcc "..\\Src\\osKernel.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F411xE -c -I../Inc "-IC:\\Users\\mervi\\OneDrive\\Documents\\m_core_rtos\\GCC_STM32CubeIDE\\0_led_driver\\chip_headers\\Include" "-IC:\\Users\\mervi\\OneDrive\\Documents\\m_core_rtos\\GCC_STM32CubeIDE\\0_led_driver\\chip_headers\\Device\\ST\\STM32F4xx\\Include" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src\\osKernel.o" 
+..\Src\osKernel.c:8:33: error: expected ';', ',' or ')' before numeric constant
+    8 | #define QUANTA                  10
+      |                                 ^~
+..\Src\osKernel.c:89:30: note: in expansion of macro 'QUANTA'
+   89 | void osKernelLaunch(uint32_t QUANTA){
+      |                              ^~~~~~
+19:18:21 **** Building Selected Files of configuration Debug for project 5_RoundRobinScheduler ****
+Info: Internal Builder is used for build
+arm-none-eabi-gcc "..\\Src\\osKernel.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F411xE -c -I../Inc "-IC:\\Users\\mervi\\OneDrive\\Documents\\m_core_rtos\\GCC_STM32CubeIDE\\0_led_driver\\chip_headers\\Include" "-IC:\\Users\\mervi\\OneDrive\\Documents\\m_core_rtos\\GCC_STM32CubeIDE\\0_led_driver\\chip_headers\\Device\\ST\\STM32F4xx\\Include" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src\\osKernel.o" 
+..\Src\osKernel.c:87:6: error: conflicting types for 'osKernelLaunch'; have 'void(uint32_t)' {aka 'void(long unsigned int)'}
+   87 | void osKernelLaunch(uint32_t quanta){
+      |      ^~~~~~~~~~~~~~
+In file included from ..\Src\osKernel.c:1:
+../Inc/osKernel.h:7:6: note: previous declaration of 'osKernelLaunch' with type 'void(void)'
+    7 | void osKernelLaunch(void);
+      |      ^~~~~~~~~~~~~~
+..\Src\osKernel.c: In function 'osKernelLaunch':
+..\Src\osKernel.c:107:9: error: implicit declaration of function 'osSchedulerLaunch' [-Wimplicit-function-declaration]
+  107 |         osSchedulerLaunch(QUANTA);
+      |         ^~~~~~~~~~~~~~~~~
+..\Src\osKernel.c:107:27: error: 'QUANTA' undeclared (first use in this function)
+  107 |         osSchedulerLaunch(QUANTA);
+      |                           ^~~~~~
+..\Src\osKernel.c:107:27: note: each undeclared identifier is reported only once for each function it appears in
+..\Src\osKernel.c: At top level:
+..\Src\osKernel.c:151:6: warning: conflicting types for 'osSchedulerLaunch'; have 'void(void)'
+  151 | void osSchedulerLaunch(void){
+      |      ^~~~~~~~~~~~~~~~~
+..\Src\osKernel.c:107:9: note: previous implicit declaration of 'osSchedulerLaunch' with type 'void(void)'
+  107 |         osSchedulerLaunch(QUANTA);
+      |         ^~~~~~~~~~~~~~~~~
+19:19:48 **** Building Selected Files of configuration Debug for project 5_RoundRobinScheduler ****
+Info: Internal Builder is used for build
+arm-none-eabi-gcc "..\\Src\\osKernel.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F411xE -c -I../Inc "-IC:\\Users\\mervi\\OneDrive\\Documents\\m_core_rtos\\GCC_STM32CubeIDE\\0_led_driver\\chip_headers\\Include" "-IC:\\Users\\mervi\\OneDrive\\Documents\\m_core_rtos\\GCC_STM32CubeIDE\\0_led_driver\\chip_headers\\Device\\ST\\STM32F4xx\\Include" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src\\osKernel.o" 
+..\Src\osKernel.c: In function 'osKernelLaunch':
+..\Src\osKernel.c:107:9: error: implicit declaration of function 'osSchedulerLaunch' [-Wimplicit-function-declaration]
+  107 |         osSchedulerLaunch(QUANTA);
+      |         ^~~~~~~~~~~~~~~~~
+..\Src\osKernel.c:107:27: error: 'QUANTA' undeclared (first use in this function)
+  107 |         osSchedulerLaunch(QUANTA);
+      |                           ^~~~~~
+..\Src\osKernel.c:107:27: note: each undeclared identifier is reported only once for each function it appears in
+..\Src\osKernel.c: At top level:
+..\Src\osKernel.c:151:6: warning: conflicting types for 'osSchedulerLaunch'; have 'void(void)'
+  151 | void osSchedulerLaunch(void){
+      |      ^~~~~~~~~~~~~~~~~
+..\Src\osKernel.c:107:9: note: previous implicit declaration of 'osSchedulerLaunch' with type 'void(void)'
+  107 |         osSchedulerLaunch(QUANTA);
+      |         ^~~~~~~~~~~~~~~~~
+19:20:47 **** Building Selected Files of configuration Debug for project 5_RoundRobinScheduler ****
+Info: Internal Builder is used for build
+arm-none-eabi-gcc "..\\Src\\osKernel.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F411xE -c -I../Inc "-IC:\\Users\\mervi\\OneDrive\\Documents\\m_core_rtos\\GCC_STM32CubeIDE\\0_led_driver\\chip_headers\\Include" "-IC:\\Users\\mervi\\OneDrive\\Documents\\m_core_rtos\\GCC_STM32CubeIDE\\0_led_driver\\chip_headers\\Device\\ST\\STM32F4xx\\Include" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src\\osKernel.o" 
+..\Src\osKernel.c: In function 'osKernelLaunch':
+..\Src\osKernel.c:107:9: error: implicit declaration of function 'osSchedulerLaunch' [-Wimplicit-function-declaration]
+  107 |         osSchedulerLaunch();
+      |         ^~~~~~~~~~~~~~~~~
+..\Src\osKernel.c: At top level:
+..\Src\osKernel.c:151:6: warning: conflicting types for 'osSchedulerLaunch'; have 'void(void)'
+  151 | void osSchedulerLaunch(void){
+      |      ^~~~~~~~~~~~~~~~~
+..\Src\osKernel.c:107:9: note: previous implicit declaration of 'osSchedulerLaunch' with type 'void(void)'
+  107 |         osSchedulerLaunch();
+      |         ^~~~~~~~~~~~~~~~~
+19:24:47 **** Cleaning Selected Files of configuration Debug for project 5_RoundRobinScheduler ****
+Info: Internal Builder is used for build
+Nothing to clean.
+19:24:53 **** Building Selected Files of configuration Debug for project 5_RoundRobinScheduler ****
+Info: Internal Builder is used for build
+arm-none-eabi-gcc "..\\Src\\osKernel.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F411xE -c -I../Inc "-IC:\\Users\\mervi\\OneDrive\\Documents\\m_core_rtos\\GCC_STM32CubeIDE\\0_led_driver\\chip_headers\\Include" "-IC:\\Users\\mervi\\OneDrive\\Documents\\m_core_rtos\\GCC_STM32CubeIDE\\0_led_driver\\chip_headers\\Device\\ST\\STM32F4xx\\Include" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src\\osKernel.o" 

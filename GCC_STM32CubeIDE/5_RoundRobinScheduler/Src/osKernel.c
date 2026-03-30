@@ -3,7 +3,7 @@
 #define NUM_OF_THREADS		3
 #define STACKSIZE			100
 
-#define BUS_FREQUENCY		16000000
+#define BUS_FREQ		16000000
 
 #define CTRL_ENABLE		(1u << 0)
 #define CTRL_TICKINT	(1u << 1)
@@ -11,7 +11,7 @@
 #define CTRL_COUNTFLAG	(1u << 16)
 #define SYSTICK_RST		0
 
-uint32_t MILLIS_PRESCALERL;
+uint32_t MILLIS_PRESCALER;
 
 typedef struct tcb {
 	int32_t *stackPt;
@@ -52,9 +52,9 @@ void osKernelStackInit(int i){
 uint8_t osKernelAddThreads(void(*task0)(void), void(*task1)(void), void(*task2)(void)){
 	/*Disable global interrupts*/
 	__disable_irq();
-	tcbs[0].nextPt = &tcbs[1];
-	tcbs[1].nextPt = &tcbs[2];
-	tcbs[2].nextPt = &tcbs[0];
+	tcbs[0].next = &tcbs[1];
+	tcbs[1].next = &tcbs[2];
+	tcbs[2].next = &tcbs[0];
 
 	/*Initialize stack for thread0*/
 	osKernelStackInit(0);
@@ -119,7 +119,7 @@ __attribute__((naked)) void SysTick_Handler(void){
 	__asm("PUSH {R4-R11}");
 
 	/*Load address of currentPt into r0*/
-	__asm("LDR R0 = currentPt");
+	__asm("LDR R0, = currentPt");
 
 	/*Load r1 from address equals r0, i.e. r1 = currentPt*/
 	__asm("LDR R1,[R0]");
@@ -130,7 +130,7 @@ __attribute__((naked)) void SysTick_Handler(void){
 	/* CHOOSE NEXT THREAD*/
 
 	/* Load r1 from location 4bytes above address r1, i.e r1 = currentPt->next*/
-	__asm("LDR R1, [R1, $4]");
+	__asm("LDR R1, [R1, #4]");
 
 	/*Store r1 at address equals r0, i.e. currentPt = r1*/
 	__asm("STR R1, [R0]");
