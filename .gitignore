@@ -1,0 +1,2 @@
+# Ignore STM32CubeIDE metadata and logs
+GCC_STM32CubeIDE/.metadata/
