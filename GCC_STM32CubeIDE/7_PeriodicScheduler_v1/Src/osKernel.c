@@ -14,6 +14,8 @@
 #define INTCTRL			(*((volatile uint32_t*)0xE000ED04))
 #define PENDSTSET		(1u << 26)
 
+uint32_t periodic_tick ;
+
 uint32_t MILLIS_PRESCALER;
 
 typedef struct tcb {
@@ -132,8 +134,9 @@ __attribute__((naked)) void SysTick_Handler(void){
 
 	/* CHOOSE NEXT THREAD*/
 
-	/* Load r1 from location 4bytes above address r1, i.e r1 = currentPt->next*/
-	__asm("LDR R1, [R1, #4]");
+	__asm("PUSH		{R0, LR}");
+	__asm("BL		osSchedulerRoundRobin");
+	__asm("POP		{R0, LR}");
 
 	/*Store r1 at address equals r0, i.e. currentPt = r1*/
 	__asm("STR R1, [R0]");
@@ -193,4 +196,14 @@ void osThreadYield(void){
 
 	/*Trigger SysTick*/
 	INTCTRL = PENDSTSET;
+}
+
+void osSchedulerRoundRobin(void){
+	if ((++period_tick) == PERIOD){
+		(*task3)();
+
+		period_tick = 0;
+	}
+
+	currentPt = currentPt->nextPt;
 }
