@@ -1,0 +1,9 @@
+C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Include/core_cm4.h:1814:22:__NVIC_SetPriority	16	static
+../Src/osKernel.c:32:6:osKernelStackInit	16	static
+../Src/osKernel.c:57:9:osKernelAddThreads	24	static,ignoring_inline_asm
+../Src/osKernel.c:88:6:osKernelInit	4	static
+../Src/osKernel.c:92:6:osKernelLaunch	16	static
+../Src/osKernel.c:118:29:SysTick_Handler	0	static,ignoring_inline_asm
+../Src/osKernel.c:163:6:osSchedulerLaunch	4	static,ignoring_inline_asm
+../Src/osKernel.c:199:6:osThreadYield	4	static
+../Src/osKernel.c:207:6:osSchedulerRoundRobin	8	static
