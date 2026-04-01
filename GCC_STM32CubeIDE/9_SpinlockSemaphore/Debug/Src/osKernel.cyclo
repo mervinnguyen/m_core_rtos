@@ -11,3 +11,4 @@ C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip
 ../Src/osKernel.c:221:6:tim2_1hz_interrupt_init	1
 ../Src/osKernel.c:244:6:osSemaphoreInit	1
 ../Src/osKernel.c:248:6:osSemaphoreSet	1
+../Src/osKernel.c:254:6:osSemaphoreWait	2

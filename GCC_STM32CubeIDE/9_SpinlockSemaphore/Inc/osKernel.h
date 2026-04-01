@@ -16,5 +16,8 @@ void task3(void);
 void osSchedulerRoundRobin(void);
 void tim2_1hz_interrupt_init(void);
 
+void osSemaphoreInit(int32_t *semaphore, int32_t value);
+void osSemaphoreSet(int32_t *semaphore);
+void osSemaphoreWait(int32_t *semaphore);
 
 #endif

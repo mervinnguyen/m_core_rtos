@@ -15,6 +15,8 @@ void motor_stop(void);
 void valve_open(void);
 void valve_close(void);
 
+int32_t semaphore1, semaphore2;
+
 void task0(void){
 	while(1){
 		Task0_Profiler++;
@@ -24,14 +26,20 @@ void task0(void){
 
 void task1(void){
 	while(1){
-		Task1_Profiler++;
-		valve_open();
+		osSemaphoreWait(&semaphore1);
+		//Task1_Profiler++;
+		motor_run();
+		//osSemaphoreSet(&semaphore1);
 	}
 }
 
 void task2(void){
 	while(1){
-		Task2_Profiler++;
+		osSemaphoreWait(&semaphore2);
+		//Task2_Profiler++;
+		valve_open();
+		osSemaphoreSet(&semaphore1);
+
 	}
 }
 
@@ -48,6 +56,10 @@ int main(){
 
 	/*Initialize hardware timer*/
 	tim2_1hz_interrupt_init();
+
+	/*Initialize semaphores*/
+	osSemaphoreInit(&semaphore1, 1);
+	osSemaphoreInit(&semaphore2, 0);
 
 	/* Initialize Kernel*/
 	osKernelInit();
