@@ -240,3 +240,13 @@ void tim2_1hz_interrupt_init(void){
 	/*Enbale timer interrupt*/
 	NVIC_EnableIRQ(TIM2_IRQn);
 }
+
+void osSemaphoreInit(int32_t *semaphore, int32_t value){
+	*semaphore = value;
+}
+
+void osSemaphoreSet(int32_t *semaphore){
+	__disable_irq();
+	*semaphore += 1;
+	__enable_irq();
+}

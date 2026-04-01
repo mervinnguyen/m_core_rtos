@@ -9,3 +9,5 @@ C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip
 ../Src/osKernel.c:203:6:osThreadYield	4	static
 ../Src/osKernel.c:211:6:osSchedulerRoundRobin	8	static
 ../Src/osKernel.c:221:6:tim2_1hz_interrupt_init	8	static
+../Src/osKernel.c:244:6:osSemaphoreInit	16	static
+../Src/osKernel.c:248:6:osSemaphoreSet	16	static,ignoring_inline_asm
