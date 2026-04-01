@@ -68,7 +68,3 @@ static void uart_set_baudrate(uint32_t periph_clk, uint32_t baudrate){
 static uint16_t compute_uart_bd(uint32_t periph_clk, uint32_t baudrate){		//calculate baud rate to initialize UART peripheral
 	return ((periph_clk + (baudrate/2u))/baudrate);
 }
-
-void uart_rx_init(void){	//receiving byte data
-
-}
