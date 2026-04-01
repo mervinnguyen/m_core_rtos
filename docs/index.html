@@ -460,6 +460,36 @@
     font-family: var(--mono);
     font-size: 12px;
   }
+
+  .build-step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+  }
+
+  .build-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    background: rgba(0,212,170,0.1);
+    border: 1px solid rgba(0,212,170,0.2);
+    border-radius: 4px;
+    padding: 3px 8px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .build-content h3 {
+    font-size: 15px;
+    margin-bottom: 6px;
+  }
+
+  .build-content p {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
 </style>
 </head>
 <body>
@@ -469,7 +499,7 @@
   <div class="badge-row">
     <span class="badge badge-teal">ARM Cortex-M</span>
     <span class="badge badge-blue">Bare Metal</span>
-    <span class="badge badge-amber">STM32</span>
+    <span class="badge badge-amber">STM32F411</span>
     <span class="badge badge-green">C · ASM</span>
     <span class="badge badge-purple">RTOS</span>
     <span class="badge badge-orange">Embedded Systems</span>
@@ -478,10 +508,11 @@
   <h1><span class="accent">M-Core RTOS</span></h1>
   <p class="subtitle">// A Real-Time Operating System built from scratch on ARM Cortex-M</p>
   <p class="hero-desc">
-    A ground-up implementation of a preemptive real-time operating system targeting ARM Cortex-M
-    MCUs. Implements round-robin, cooperative, and periodic schedulers with PendSV-based
-    context switching, a thread control block subsystem, and binary semaphore synchronization,
-    built directly on top of SysTick and NVIC hardware primitives.
+    A ground-up implementation of a preemptive real-time operating system targeting the STM32F411
+    Nucleo on ARM Cortex-M4. Implements a round-robin scheduler with SysTick-driven context
+    switching, periodic callbacks and cooperative yielding layered on top of the same scheduler
+    core, a thread control block subsystem, and binary semaphore synchronization, built directly
+    on SysTick and NVIC hardware primitives.
   </p>
   <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
     <a href="https://github.com/mervinnguyen/m_core_rtos"
@@ -500,7 +531,7 @@
 <h2>System Architecture</h2>
 
 <p>The system is structured as four distinct layers. Each layer has a single responsibility and
-communicates only with the layer directly below it — a strict dependency hierarchy that mirrors
+communicates only with the layer directly below it, a strict dependency hierarchy that mirrors
 production-grade embedded OS design.</p>
 
 <div class="arch">
@@ -525,11 +556,12 @@ production-grade embedded OS design.</p>
         <span style="color:var(--accent)">L3 — RTOS Kernel</span>
       </div>
       <div class="arch-items">
-        <span class="arch-item item-teal">Scheduler (RR / Coop / Periodic)</span>
-        <span class="arch-item item-teal">Context Switch Engine</span>
+        <span class="arch-item item-teal">Round-Robin Scheduler</span>
+        <span class="arch-item item-teal">Periodic Callback (layered)</span>
+        <span class="arch-item item-teal">Cooperative Yield (layered)</span>
+        <span class="arch-item item-teal">SysTick Context Switch</span>
         <span class="arch-item item-teal">TCB Manager</span>
         <span class="arch-item item-teal">Semaphore / IPC</span>
-        <span class="arch-item item-teal">Kernel API (os_init / os_launch)</span>
       </div>
     </div>
 
@@ -539,9 +571,9 @@ production-grade embedded OS design.</p>
         <span style="color:var(--accent2)">L2 — Driver Layer</span>
       </div>
       <div class="arch-items">
-        <span class="arch-item item-blue">LED Driver (debug / task validation)</span>
-        <span class="arch-item item-blue">UART Driver (logging / observability)</span>
-        <span class="arch-item item-blue">Timebase — SysTick (scheduling clock)</span>
+        <span class="arch-item item-blue">LED Driver (GPIO PA5)</span>
+        <span class="arch-item item-blue">UART Driver (USART2 TX)</span>
+        <span class="arch-item item-blue">Timebase (SysTick)</span>
       </div>
     </div>
 
@@ -551,9 +583,9 @@ production-grade embedded OS design.</p>
         <span style="color:var(--amber)">L1 — Cortex-M Hardware Primitives</span>
       </div>
       <div class="arch-items">
-        <span class="arch-item item-amber">SysTick — scheduler trigger</span>
-        <span class="arch-item item-amber">PendSV — context switch interrupt</span>
-        <span class="arch-item item-amber">NVIC — interrupt priority control</span>
+        <span class="arch-item item-amber">SysTick — scheduler + context switch</span>
+        <span class="arch-item item-amber">TIM2 — 1 Hz periodic ISR</span>
+        <span class="arch-item item-amber">NVIC — interrupt priority (15)</span>
       </div>
     </div>
 
@@ -561,65 +593,66 @@ production-grade embedded OS design.</p>
 </div>
 
 <div class="note">
-  <strong>Design Principle:</strong> SysTick, PendSV, and NVIC are the three hardware primitives
-  the entire kernel is built on. Every scheduling decision ultimately flows through these three
-  peripheral interfaces.
+  <strong>Design note:</strong> SysTick drives both scheduling decisions and the context switch
+  directly, there is no PendSV deferral in this implementation. TIM2 provides an independent
+  1 Hz application-level interrupt. SysTick runs at NVIC priority 15 (lowest), ensuring it never
+  preempts device driver ISRs.
 </div>
 
 
 <!-- SCHEDULER FLOW -->
 <h2>Scheduler Execution Flow</h2>
 
-<p>Each scheduler tick is fully deterministic. SysTick fires at a fixed 1 ms interval, increments
-the system counter, triggers the scheduler decision, and defers the actual register swap to PendSV, 
-the lowest-priority interrupt on the system, ensuring context switches never interrupt critical ISRs.</p>
+<p>SysTick fires every 10 ms (configurable via <code>QUANTA</code>). Both the scheduling decision
+and the register swap happen inside the SysTick ISR itself, no deferred interrupt. A thread can
+also trigger an early switch voluntarily via <code>osThreadYield()</code>, which resets the SysTick
+countdown and re-pends the interrupt immediately.</p>
 
 <div class="flow">
-  <div class="flow-step active">SysTick IRQ<br><span style="font-size:10px;opacity:0.6">1 ms</span></div>
+  <div class="flow-step active">SysTick IRQ<br><span style="font-size:10px;opacity:0.6">every QUANTA ms</span></div>
   <div class="flow-arrow">→</div>
-  <div class="flow-step">Increment sys_tick<br><span style="font-size:10px;opacity:0.6">volatile uint32_t</span></div>
+  <div class="flow-step">CPSID I<br><span style="font-size:10px;opacity:0.6">disable irq</span></div>
   <div class="flow-arrow">→</div>
-  <div class="flow-step">Scheduler evaluate<br><span style="font-size:10px;opacity:0.6">next TCB</span></div>
+  <div class="flow-step">PUSH R4–R11<br><span style="font-size:10px;opacity:0.6">save current</span></div>
   <div class="flow-arrow">→</div>
-  <div class="flow-step highlight">Pend PendSV<br><span style="font-size:10px;opacity:0.6">SCB→ICSR</span></div>
+  <div class="flow-step active">osSchedulerRoundRobin()<br><span style="font-size:10px;opacity:0.6">advance currentPt</span></div>
   <div class="flow-arrow">→</div>
-  <div class="flow-step active">Context Switch<br><span style="font-size:10px;opacity:0.6">R4–R11 swap</span></div>
+  <div class="flow-step">POP R4–R11<br><span style="font-size:10px;opacity:0.6">restore next</span></div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step highlight">BX LR<br><span style="font-size:10px;opacity:0.6">exception return</span></div>
 </div>
-
-<p style="margin-top:16px;">The separation of scheduling logic (SysTick) from the stack swap (PendSV)
-is a critical Cortex-M design pattern since it allows the scheduler to run at a higher priority than the
-context switch, guaranteeing that interrupt latency is never inflated by task register saves.</p>
 
 
 <!-- CONTEXT SWITCHING -->
 <h2>Context Switching</h2>
 
-<p>The Cortex-M hardware exception mechanism saves a partial frame automatically on interrupt entry.
-The PendSV handler saves the remaining callee-saved registers manually, completing the full
-architectural context before switching the stack pointer to the next thread.</p>
+<p>The Cortex-M hardware exception mechanism saves a partial frame automatically on interrupt entry
+(R0–R3, R12, LR, PC, xPSR). The SysTick handler manually saves and restores the remaining
+callee-saved registers (R4–R11), completing the full architectural context before swapping the
+stack pointer to the next thread.</p>
 
 <div class="ctx-diagram">
   <div class="ctx-task">
-    <div class="ctx-task-title" style="color:var(--text3)">Running Task — Save</div>
+    <div class="ctx-task-title" style="color:var(--text3)">Current Task — Save</div>
     <div class="ctx-reg reg-hw"><span>R0–R3</span><span style="opacity:0.5">hw auto</span></div>
     <div class="ctx-reg reg-hw"><span>R12</span><span style="opacity:0.5">hw auto</span></div>
     <div class="ctx-reg reg-hw"><span>LR</span><span style="opacity:0.5">hw auto</span></div>
     <div class="ctx-reg reg-hw"><span>PC</span><span style="opacity:0.5">hw auto</span></div>
     <div class="ctx-reg reg-hw"><span>xPSR</span><span style="opacity:0.5">hw auto</span></div>
-    <div class="ctx-reg reg-sw"><span>R4–R11</span><span style="opacity:0.5">manual</span></div>
-    <div class="ctx-reg reg-sw"><span>SP (PSP)</span><span style="opacity:0.5">saved to TCB</span></div>
+    <div class="ctx-reg reg-sw"><span>R4–R11</span><span style="opacity:0.5">manual PUSH</span></div>
+    <div class="ctx-reg reg-sw"><span>SP (MSP)</span><span style="opacity:0.5">STR → TCB</span></div>
   </div>
 
   <div class="ctx-middle">
     <div class="ctx-middle-label">trigger</div>
-    <div class="pendsv-box">PendSV<br>Handler</div>
-    <div class="ctx-middle-label">lowest priority<br>interrupt</div>
+    <div class="pendsv-box">SysTick<br>Handler<br><span style="font-size:9px;opacity:0.7;font-weight:400">naked / asm</span></div>
+    <div class="ctx-middle-label">priority 15<br>(lowest)</div>
   </div>
 
   <div class="ctx-task">
     <div class="ctx-task-title" style="color:var(--accent)">Next Task — Restore</div>
-    <div class="ctx-reg reg-sw"><span>SP (PSP)</span><span style="opacity:0.5">load from TCB</span></div>
-    <div class="ctx-reg reg-sw"><span>R4–R11</span><span style="opacity:0.5">manual pop</span></div>
+    <div class="ctx-reg reg-sw"><span>SP (MSP)</span><span style="opacity:0.5">LDR ← TCB</span></div>
+    <div class="ctx-reg reg-sw"><span>R4–R11</span><span style="opacity:0.5">manual POP</span></div>
     <div class="ctx-reg reg-hw"><span>xPSR</span><span style="opacity:0.5">hw auto</span></div>
     <div class="ctx-reg reg-hw"><span>PC</span><span style="opacity:0.5">hw auto</span></div>
     <div class="ctx-reg reg-hw"><span>LR</span><span style="opacity:0.5">hw auto</span></div>
@@ -629,117 +662,185 @@ architectural context before switching the stack pointer to the next thread.</p>
 </div>
 
 <pre>
-<span class="cm">/* PendSV handler — naked function, no prologue/epilogue */</span>
-<span class="kw">__attribute__</span>((naked)) <span class="kw">void</span> <span class="fn">PendSV_Handler</span>(<span class="kw">void</span>) {
-    <span class="kw">__asm volatile</span> (
-        <span class="st">"MRS     R0, PSP            \n"</span>  <span class="cm">/* load PSP of running task */</span>
-        <span class="st">"STMDB   R0!, {R4-R11}      \n"</span>  <span class="cm">/* push callee-saved regs   */</span>
-        <span class="st">"LDR     R1, =currentTCB    \n"</span>
-        <span class="st">"LDR     R2, [R1]           \n"</span>
-        <span class="st">"STR     R0, [R2]           \n"</span>  <span class="cm">/* save new SP into TCB     */</span>
-        <span class="st">"BL      os_scheduler       \n"</span>  <span class="cm">/* select next task         */</span>
-        <span class="st">"LDR     R2, [R1]           \n"</span>
-        <span class="st">"LDR     R0, [R2]           \n"</span>  <span class="cm">/* restore SP from next TCB */</span>
-        <span class="st">"LDMIA   R0!, {R4-R11}      \n"</span>  <span class="cm">/* pop callee-saved regs    */</span>
-        <span class="st">"MSR     PSP, R0            \n"</span>
-        <span class="st">"BX      LR                 \n"</span>  <span class="cm">/* exception return          */</span>
-    );
+<span class="cm">/* SysTick handler — naked, no compiler prologue/epilogue */</span>
+<span class="kw">__attribute__</span>((naked)) <span class="kw">void</span> <span class="fn">SysTick_Handler</span>(<span class="kw">void</span>) {
+    <span class="kw">__asm</span>(<span class="st">"CPSID  I"</span>);                     <span class="cm">/* disable interrupts */</span>
+    <span class="kw">__asm</span>(<span class="st">"PUSH   {R4-R11}"</span>);              <span class="cm">/* save callee-saved registers */</span>
+    <span class="kw">__asm</span>(<span class="st">"LDR    R0, =currentPt"</span>);        <span class="cm">/* R0 = &amp;currentPt */</span>
+    <span class="kw">__asm</span>(<span class="st">"LDR    R1, [R0]"</span>);              <span class="cm">/* R1 = currentPt */</span>
+    <span class="kw">__asm</span>(<span class="st">"STR    SP, [R1]"</span>);              <span class="cm">/* currentPt-&gt;stackPt = SP */</span>
+    <span class="kw">__asm</span>(<span class="st">"PUSH   {R0, LR}"</span>);
+    <span class="kw">__asm</span>(<span class="st">"BL     osSchedulerRoundRobin"</span>); <span class="cm">/* advance currentPt */</span>
+    <span class="kw">__asm</span>(<span class="st">"POP    {R0, LR}"</span>);
+    <span class="kw">__asm</span>(<span class="st">"LDR    R1, [R0]"</span>);              <span class="cm">/* R1 = new currentPt */</span>
+    <span class="kw">__asm</span>(<span class="st">"LDR    SP, [R1]"</span>);              <span class="cm">/* SP = next task stackPt */</span>
+    <span class="kw">__asm</span>(<span class="st">"POP    {R4-R11}"</span>);              <span class="cm">/* restore next task registers */</span>
+    <span class="kw">__asm</span>(<span class="st">"CPSIE  I"</span>);                     <span class="cm">/* enable interrupts */</span>
+    <span class="kw">__asm</span>(<span class="st">"BX     LR"</span>);                    <span class="cm">/* exception return → next task */</span>
 }
 </pre>
+
+<div class="warn">
+  <strong>Note:</strong> All thread stacks use the MSP (Main Stack Pointer) in this implementation.
+  A production kernel would separate kernel stack (MSP) from thread stacks (PSP) to prevent a
+  thread stack overflow from silently corrupting the kernel.
+</div>
 
 
 <!-- TCB -->
 <h2>Thread Control Block</h2>
 
-<p>Each thread is fully described by its TCB. The stack pointer is always the first field — this
-ensures zero-offset access from assembly without any struct member arithmetic, a requirement for
-correct context switching from the PendSV handler.</p>
+<p>Each thread is described by a TCB containing its saved stack pointer and a pointer to the next
+TCB in the circular linked list. The stack pointer is always the <strong style="color:var(--text)">first field</strong>,
+this ensures zero-offset access from assembly without struct member arithmetic, a hard requirement
+for correct context switching.</p>
 
 <pre>
-<span class="kw">typedef enum</span> {
-    <span class="nm">THREAD_READY</span>   = <span class="nm">0x00</span>,
-    <span class="nm">THREAD_BLOCKED</span> = <span class="nm">0x01</span>,
-    <span class="nm">THREAD_SLEEP</span>   = <span class="nm">0x02</span>,
-} <span class="ty">thread_state_t</span>;
-
 <span class="kw">typedef struct</span> <span class="ty">tcb</span> {
-    <span class="kw">uint32_t</span>        *stack_ptr;   <span class="cm">/* MUST be first — accessed from asm */</span>
-    <span class="kw">uint32_t</span>         priority;    <span class="cm">/* scheduler priority (0 = highest)  */</span>
-    <span class="ty">thread_state_t</span>   state;       <span class="cm">/* READY | BLOCKED | SLEEP           */</span>
-    <span class="kw">uint32_t</span>         delay_ticks; <span class="cm">/* tick count until wake             */</span>
-    <span class="kw">struct</span> <span class="ty">tcb</span>      *next;        <span class="cm">/* circular linked list pointer      */</span>
-    <span class="kw">const char</span>      *name;        <span class="cm">/* debug identifier                  */</span>
-} <span class="ty">tcb_t</span>;
+    <span class="kw">int32_t</span>    *<span class="nm">stackPt</span>;   <span class="cm">/* MUST be first — accessed directly from asm */</span>
+    <span class="kw">struct</span> <span class="ty">tcb</span> *<span class="nm">next</span>;      <span class="cm">/* circular linked list pointer */</span>
+} <span class="ty">tcbType</span>;
+</pre>
+
+<p>Each thread is allocated a fixed stack of <code>STACKSIZE</code> (400) words = 1600 bytes.
+Before launch, each stack is pre-initialized with a fake exception frame so the first context
+switch returns cleanly into the thread function:</p>
+
+<pre>
+<span class="kw">void</span> <span class="fn">osKernelStackInit</span>(<span class="kw">int</span> i) {
+    tcbs[i].<span class="nm">stackPt</span> = &amp;TCB_STACK[i][STACKSIZE - <span class="nm">16</span>];
+
+    TCB_STACK[i][STACKSIZE - <span class="nm">1</span>]  = (<span class="nm">1u</span> &lt;&lt; <span class="nm">24</span>);     <span class="cm">/* xPSR: Thumb bit set        */</span>
+    TCB_STACK[i][STACKSIZE - <span class="nm">2</span>]  = (<span class="kw">int32_t</span>)taskFn; <span class="cm">/* PC: thread entry point     */</span>
+    <span class="cm">/* R14–R4 pre-filled with 0xAAAAAAAA for debug visibility */</span>
+}
 </pre>
 
 <div class="warn">
-  <strong>Critical:</strong> Each thread stack must be pre-initialized with a fake exception frame
-  before <code>os_launch()</code>. The PC field is set to the thread function address; the xPSR
-  Thumb bit (bit 24) must be set. Without this, the first exception return crashes immediately.
+  <strong>Critical:</strong> xPSR bit 24 (Thumb mode) must be set. Without it, the first exception
+  return causes an immediate hard fault on Cortex-M.
 </div>
 
 
 <!-- SCHEDULERS -->
-<h2>Scheduler Implementations</h2>
+<h2>Scheduler Design</h2>
+
+<p>The kernel is built on a single <strong style="color:var(--text)">preemptive round-robin</strong> core.
+Periodic task execution and cooperative yielding are both supported, not as separate scheduler
+implementations, but as deliberate features layered on top of that one core. There is no mode
+switch; all three behaviors flow through the same SysTick interrupt and the same context switch path.</p>
 
 <table class="sched-table">
   <thead>
     <tr>
-      <th>Scheduler</th>
-      <th>Preemption</th>
+      <th>Behavior</th>
+      <th>Implementation</th>
       <th>Trigger</th>
-      <th>Use Case</th>
-      <th>Key Tradeoff</th>
+      <th>Notes</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td style="color:var(--accent)">Round Robin</td>
-      <td style="color:var(--green)">Yes</td>
-      <td>SysTick (1 ms)</td>
-      <td>Equal-priority task fairness</td>
-      <td>Jitter; no priority differentiation</td>
+      <td style="color:var(--accent)">Round-Robin (base)</td>
+      <td><code>osSchedulerRoundRobin()</code></td>
+      <td>SysTick every 10 ms</td>
+      <td>Advances <code>currentPt</code> through circular TCB list</td>
     </tr>
     <tr>
-      <td style="color:var(--accent2)">Cooperative</td>
-      <td style="color:var(--accent3)">No</td>
-      <td>Explicit <code>os_yield()</code></td>
-      <td>Deterministic, low-overhead systems</td>
-      <td>Starvation if tasks don't yield</td>
+      <td style="color:var(--purple)">Periodic (layered)</td>
+      <td>Tick counter inside RR scheduler</td>
+      <td>Every <code>PERIOD</code> scheduler ticks</td>
+      <td>Callback fires in ISR context and must be short, non-blocking</td>
     </tr>
     <tr>
-      <td style="color:var(--purple)">Periodic</td>
-      <td style="color:var(--green)">Yes</td>
-      <td>Hardware timer (configurable)</td>
-      <td>Hard real-time, control loops</td>
-      <td>Strict period budgeting required</td>
+      <td style="color:var(--accent2)">Cooperative yield (layered)</td>
+      <td><code>osThreadYield()</code></td>
+      <td>Opt-in, called by thread</td>
+      <td>Resets SysTick VAL and sets PENDSTSET, same switch path as preemption</td>
     </tr>
   </tbody>
 </table>
+
+<pre>
+<span class="cm">/* Periodic callback layered inside the round-robin scheduler */</span>
+<span class="kw">void</span> <span class="fn">osSchedulerRoundRobin</span>(<span class="kw">void</span>) {
+    <span class="kw">if</span> ((++<span class="nm">period_tick</span>) == PERIOD) {
+        (*<span class="nm">task3</span>)();          <span class="cm">/* periodic callback fires every PERIOD ticks */</span>
+        <span class="nm">period_tick</span> = <span class="nm">0</span>;
+    }
+    <span class="nm">currentPt</span> = <span class="nm">currentPt</span>-&gt;next;  <span class="cm">/* round-robin advance always happens */</span>
+}
+
+<span class="cm">/* Cooperative yield — early trigger of the same SysTick mechanism */</span>
+<span class="kw">void</span> <span class="fn">osThreadYield</span>(<span class="kw">void</span>) {
+    SysTick-&gt;<span class="nm">VAL</span> = <span class="nm">0</span>;      <span class="cm">/* reset countdown so next quanta is full */</span>
+    INTCTRL = PENDSTSET;   <span class="cm">/* pend SysTick immediately via ICSR */</span>
+}
+</pre>
+
+
+<!-- SEMAPHORES -->
+<h2>Semaphore Synchronization</h2>
+
+<p>The kernel provides counting semaphores for inter-task synchronization. All operations disable
+global interrupts to ensure atomicity. <code>osSemaphoreWait</code> uses a spin-wait that briefly
+re-enables interrupts on each iteration to allow SysTick to fire and switch to a thread that may
+signal the semaphore.</p>
+
+<pre>
+<span class="kw">void</span> <span class="fn">osSemaphoreWait</span>(<span class="kw">int32_t</span> *semaphore) {
+    <span class="fn">__disable_irq</span>();
+    <span class="kw">while</span> (*semaphore &lt;= <span class="nm">0</span>) {
+        <span class="fn">__enable_irq</span>();    <span class="cm">/* allow SysTick to fire and switch context */</span>
+        <span class="fn">__disable_irq</span>();
+    }
+    *semaphore -= <span class="nm">1</span>;
+    <span class="fn">__enable_irq</span>();
+}
+
+<span class="kw">void</span> <span class="fn">osSemaphoreSet</span>(<span class="kw">int32_t</span> *semaphore) {
+    <span class="fn">__disable_irq</span>();
+    *semaphore += <span class="nm">1</span>;
+    <span class="fn">__enable_irq</span>();
+}
+</pre>
+
+<p>Example from <code>main.c</code> — task2 gates on <code>semaphore2</code>, opens the valve,
+then signals <code>semaphore1</code> to unblock task1 and run the motor:</p>
+
+<pre>
+<span class="cm">/* semaphore1 init=1, semaphore2 init=0 */</span>
+
+task2:  <span class="fn">osSemaphoreWait</span>(&amp;semaphore2)  <span class="cm">/* blocks until signalled */</span>
+        <span class="fn">valve_open</span>()
+        <span class="fn">osSemaphoreSet</span>(&amp;semaphore1)   <span class="cm">/* unblocks task1 */</span>
+
+task1:  <span class="fn">osSemaphoreWait</span>(&amp;semaphore1)  <span class="cm">/* unblocked by task2 */</span>
+        <span class="fn">motor_run</span>()
+</pre>
 
 
 <!-- KERNEL API -->
 <h2>Kernel API</h2>
 
 <pre>
-<span class="cm">/* ── Kernel Lifecycle ──────────────────────────────────────── */</span>
-<span class="kw">void</span>    <span class="fn">os_init</span>    (<span class="kw">void</span>);                      <span class="cm">/* initialize kernel data structures       */</span>
-<span class="kw">void</span>    <span class="fn">os_launch</span>  (<span class="kw">void</span>);                      <span class="cm">/* start scheduler — never returns         */</span>
+<span class="cm">/* ── Kernel Lifecycle ──────────────────────────────────────────────── */</span>
+<span class="kw">void</span>    <span class="fn">osKernelInit</span>   (<span class="kw">void</span>);              <span class="cm">/* compute MILLIS_PRESCALER*/</span>
+<span class="kw">void</span>    <span class="fn">osKernelLaunch</span> (<span class="kw">uint32_t</span> quanta);  <span class="cm">/* configure SysTick + start — no return*/</span>
 
-<span class="cm">/* ── Thread Management ─────────────────────────────────────── */</span>
-<span class="kw">void</span>    <span class="fn">os_add_thread</span> (<span class="kw">void</span> (*fn)(<span class="kw">void</span>),
-                       <span class="kw">uint32_t</span> *stack,
-                       <span class="kw">uint32_t</span>  stack_size,
-                       <span class="kw">uint32_t</span>  priority);
+<span class="cm">/* ── Thread Management ─────────────────────────────────────────────── */</span>
+<span class="kw">uint8_t</span> <span class="fn">osKernelAddThreads</span> (<span class="kw">void</span>(*task0)(<span class="kw">void</span>),
+                             <span class="kw">void</span>(*task1)(<span class="kw">void</span>),
+                             <span class="kw">void</span>(*task2)(<span class="kw">void</span>)); <span class="cm">/* register 3 threads*/</span>
 
-<span class="cm">/* ── Scheduling Primitives ─────────────────────────────────── */</span>
-<span class="kw">void</span>    <span class="fn">os_yield</span>   (<span class="kw">void</span>);                      <span class="cm">/* cooperative yield                       */</span>
-<span class="kw">void</span>    <span class="fn">os_sleep</span>   (<span class="kw">uint32_t</span> ticks);            <span class="cm">/* block for N ticks                       */</span>
+<span class="cm">/* ── Scheduling Primitives ─────────────────────────────────────────── */</span>
+<span class="kw">void</span>    <span class="fn">osThreadYield</span>    (<span class="kw">void</span>);           <span class="cm">/* surrender remainder of quanta */</span>
+<span class="kw">void</span>    <span class="fn">osSchedulerLaunch</span>(<span class="kw">void</span>);          <span class="cm">/* load first TCB stack, BX LR (asm) */</span>
 
-<span class="cm">/* ── Synchronization ───────────────────────────────────────── */</span>
-<span class="kw">void</span>    <span class="fn">os_sem_init</span>   (<span class="ty">semaphore_t</span> *s, <span class="kw">int</span> val);
-<span class="kw">void</span>    <span class="fn">os_sem_wait</span>   (<span class="ty">semaphore_t</span> *s);         <span class="cm">/* acquire — blocks if count == 0          */</span>
-<span class="kw">void</span>    <span class="fn">os_sem_signal</span> (<span class="ty">semaphore_t</span> *s);         <span class="cm">/* release — unblocks a waiting thread     */</span>
+<span class="cm">/* ── Synchronization ───────────────────────────────────────────────── */</span>
+<span class="kw">void</span>    <span class="fn">osSemaphoreInit</span>  (<span class="kw">int32_t</span> *s, <span class="kw">int32_t</span> val);
+<span class="kw">void</span>    <span class="fn">osSemaphoreWait</span>  (<span class="kw">int32_t</span> *s);    <span class="cm">/* acquire — spin-waits if count == 0 */</span>
+<span class="kw">void</span>    <span class="fn">osSemaphoreSet</span>   (<span class="kw">int32_t</span> *s);    <span class="cm">/* release — increments count */</span>
 </pre>
 
 
@@ -749,42 +850,43 @@ correct context switching from the PendSV handler.</p>
 <div class="feature-grid">
   <div class="feature-card">
     <span class="feature-icon badge-teal">SysTick</span>
-    <div class="feature-title">1 ms System Timebase</div>
-    <p class="feature-desc">Configurable tick frequency drives the scheduler. Global
-    <code>volatile uint32_t sys_tick</code> counter provides consistent time reference for
-    sleep and timeout logic across all threads.</p>
+    <div class="feature-title">10 ms Scheduling Tick</div>
+    <p class="feature-desc">Configurable quanta via <code>QUANTA</code> define. SysTick runs the
+    full scheduling decision and context switch in a single ISR, no deferred interrupt needed.</p>
   </div>
   <div class="feature-card">
-    <span class="feature-icon badge-orange">PendSV</span>
-    <div class="feature-title">Deferred Context Switching</div>
-    <p class="feature-desc">Context switches are deferred to PendSV which is the lowest-priority exception
-    on Cortex-M. Guarantees ISR latency is never inflated by task register saves mid-interrupt.</p>
+    <span class="feature-icon badge-orange">Context Switch</span>
+    <div class="feature-title">Naked ASM Handler</div>
+    <p class="feature-desc">Declared <code>__attribute__((naked))</code> so the compiler emits
+    no prologue or epilogue. Register state is managed entirely by inline assembly, giving full
+    control over the save/restore sequence.</p>
   </div>
   <div class="feature-card">
     <span class="feature-icon badge-purple">TCB</span>
-    <div class="feature-title">Thread Control Blocks</div>
-    <p class="feature-desc">Circular linked list of TCBs. Each entry tracks stack pointer, state,
-    delay counter, and priority. Stack-pointer-first layout enables zero-offset assembly access.</p>
+    <div class="feature-title">Circular Linked List</div>
+    <p class="feature-desc">Three fixed TCBs in a circular list. Stack pointer is the first field
+    for zero-offset assembly access. Each stack pre-initialized with a fake exception frame
+    including Thumb bit in xPSR.</p>
   </div>
   <div class="feature-card">
-    <span class="feature-icon badge-green">IPC</span>
-    <div class="feature-title">Binary Semaphores</div>
-    <p class="feature-desc">Counting semaphore implementation protects shared resources (UART,
-    GPIO banks). Blocking <code>sem_wait</code> transitions the calling thread to BLOCKED without
-    busy-waiting.</p>
+    <span class="feature-icon badge-green">Semaphores</span>
+    <div class="feature-title">Counting Semaphores</div>
+    <p class="feature-desc">Atomic increment/decrement guarded by <code>__disable_irq()</code>.
+    Spin-wait briefly re-enables interrupts each iteration to allow SysTick context switches
+    while waiting.</p>
   </div>
   <div class="feature-card">
-    <span class="feature-icon badge-blue">NVIC</span>
-    <div class="feature-title">Interrupt Priority Control</div>
-    <p class="feature-desc">PendSV configured at lowest NVIC priority (255). SysTick at highest.
-    Ensures the context switch never preempts device driver ISRs or time-critical interrupt handlers.</p>
+    <span class="feature-icon badge-blue">TIM2</span>
+    <div class="feature-title">Independent 1 Hz ISR</div>
+    <p class="feature-desc">TIM2 configured for a 1 Hz interrupt independent of the scheduler
+    tick. Used for application-level periodic work without consuming a scheduler quanta.</p>
   </div>
   <div class="feature-card">
     <span class="feature-icon badge-amber">UART</span>
-    <div class="feature-title">Runtime Observability</div>
-    <p class="feature-desc">UART logging layer provides scheduler trace output. Task switches,
-    semaphore acquisitions, and sleep events can be emitted over serial without impacting
-    timing behavior.</p>
+    <div class="feature-title">printf via USART2</div>
+    <p class="feature-desc">USART2 on PA2 at 115200 baud. <code>__io_putchar</code> hooks into
+    newlib's <code>_write</code> syscall stub so standard <code>printf</code> works from any
+    thread.</p>
   </div>
 </div>
 
@@ -792,52 +894,96 @@ correct context switching from the PendSV handler.</p>
 <!-- BOOT -->
 <h2>Boot &amp; Launch Sequence</h2>
 
-<p>The RTOS launch takes control from <code>main()</code> immediately after thread registration.
-It initializes the first task's PSP, drops to unprivileged thread mode, and triggers the first
-context switch at which point the kernel never returns to <code>main()</code>.</p>
+<p>The kernel takes control from <code>main()</code> immediately after thread registration.
+<code>osSchedulerLaunch()</code> manually unwinds the fake exception frame from the first TCB's
+stack and jumps into <code>task0</code>. From that point, SysTick drives all further scheduling
+indefinitely.</p>
 
 <div class="flow" style="flex-wrap:wrap;gap:6px;">
   <div class="flow-step">Reset Handler</div>
   <div class="flow-arrow">→</div>
-  <div class="flow-step">Stack Init</div>
-  <div class="flow-arrow">→</div>
-  <div class="flow-step">Vector Table</div>
-  <div class="flow-arrow">→</div>
   <div class="flow-step active">main()</div>
   <div class="flow-arrow">→</div>
-  <div class="flow-step active">os_init()</div>
+  <div class="flow-step">uart_tx_init()</div>
   <div class="flow-arrow">→</div>
-  <div class="flow-step active">os_add_thread()</div>
+  <div class="flow-step">tim2_1hz_interrupt_init()</div>
   <div class="flow-arrow">→</div>
-  <div class="flow-step highlight">os_launch() ✦</div>
+  <div class="flow-step">osSemaphoreInit() ×2</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step active">osKernelInit()</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step active">osKernelAddThreads()</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step highlight">osKernelLaunch(10) ✦</div>
 </div>
 
 <p style="margin-top:8px;font-size:13px;color:var(--text3)">
-  ✦ os_launch() does not return. Execution continues inside the thread pool.
+  ✦ osKernelLaunch() configures SysTick at priority 15, then calls osSchedulerLaunch() which never returns.
 </p>
 
 
-<!-- FILE STRUCTURE -->
-<h2>Repository Structure</h2>
+<!-- BUILD & FLASH -->
+<h2>Build &amp; Flash</h2>
 
-<div class="tree">
-<span class="tree-dir">m-core-rtos/</span><br>
-<span class="tree-line">├── </span><span class="tree-dir">kernel/</span><br>
-<span class="tree-line">│   ├── </span><span class="tree-file">os_core.c</span><span class="tree-comment">              # os_init, os_launch, thread management</span><br>
-<span class="tree-line">│   ├── </span><span class="tree-file">os_core.h</span><br>
-<span class="tree-line">│   ├── </span><span class="tree-file">scheduler_rr.c</span><span class="tree-comment">         # round-robin scheduler</span><br>
-<span class="tree-line">│   ├── </span><span class="tree-file">scheduler_coop.c</span><span class="tree-comment">       # cooperative scheduler</span><br>
-<span class="tree-line">│   ├── </span><span class="tree-file">scheduler_periodic.c</span><span class="tree-comment">   # periodic scheduler</span><br>
-<span class="tree-line">│   ├── </span><span class="tree-file">pendsv_handler.s</span><span class="tree-comment">       # assembly context switch</span><br>
-<span class="tree-line">│   ├── </span><span class="tree-file">tcb.h</span><span class="tree-comment">                  # thread control block definition</span><br>
-<span class="tree-line">│   └── </span><span class="tree-file">semaphore.c/h</span><span class="tree-comment">          # synchronization primitives</span><br>
-<span class="tree-line">│</span><br>
-<span class="tree-line">├── </span><span class="tree-dir">drivers/</span><br>
-<span class="tree-line">│   ├── </span><span class="tree-file">led.c/h</span><span class="tree-comment">                # GPIO LED — task debug output</span><br>
-<span class="tree-line">│   ├── </span><span class="tree-file">uart.c/h</span><span class="tree-comment">               # UART logging layer</span><br>
-<span class="tree-line">│   └── </span><span class="tree-file">timebase.c/h</span><span class="tree-comment">           # SysTick config + sys_tick counter</span><br>
-<span class="tree-line">│</span><br>
-<span class="tree-line">├── </span><span class="tree-dir">app/</span><br>
-<span class="tree-line">│   └── </span><span class="tree-file">main.c</span><span class="tree-comment">                 # thread definitions + os_launch entry</span><br>
-<span class="tree-line">│</span><br>
-<span class="tree-line">├── </span><span class="t
+<p>The recommended workflow is STM32CubeIDE, which bundles the ARM toolchain, build system, and
+ST-Link flashing. The STM32F411 Nucleo has a built-in ST-Link, no external debugger needed.</p>
+
+<div class="build-step">
+  <span class="build-num">01</span>
+  <div class="build-content">
+    <h3>Clone the repository</h3>
+    <pre>git clone https://github.com/mervinnguyen/m_core_rtos.git</pre>
+  </div>
+</div>
+
+<div class="build-step">
+  <span class="build-num">02</span>
+  <div class="build-content">
+    <h3>Import into STM32CubeIDE</h3>
+    <p>Open STM32CubeIDE, go to <strong style="color:var(--text)">File → Import → General → Existing Projects into Workspace</strong>,
+    click Browse and select the cloned folder. The project will appear with its checkbox ticked — click Finish.</p>
+    <div class="note" style="margin-top:8px;">
+      <strong>Note:</strong> The folder must contain a <code>.project</code> and <code>.cproject</code> file
+      for CubeIDE to recognise it as an Eclipse project.
+    </div>
+  </div>
+</div>
+
+<div class="build-step">
+  <span class="build-num">03</span>
+  <div class="build-content">
+    <h3>Build</h3>
+    <p>Right-click the project in Project Explorer and select <strong style="color:var(--text)">Build Project</strong>,
+    or press <code>Ctrl+B</code> (Windows/Linux) / <code>Cmd+B</code> (macOS). Confirm the Console
+    ends with <strong style="color:var(--green)">Build Finished — 0 errors</strong>. The <code>.elf</code>
+    binary is written to the <code>Debug/</code> folder.</p>
+  </div>
+</div>
+
+<div class="build-step">
+  <span class="build-num">04</span>
+  <div class="build-content">
+    <h3>Flash and run</h3>
+    <p>Connect the Nucleo board via USB. Go to <strong style="color:var(--text)">Run → Debug Configurations →
+    STM32 Cortex-M C/C++ Application</strong>, confirm the Debugger tab shows
+    <strong style="color:var(--text)">ST-LINK (OpenOCD)</strong> with interface set to <strong style="color:var(--text)">SWD</strong>,
+    then click Debug. CubeIDE will flash the binary, reset the board, and halt at <code>main()</code>.
+    Press <code>F8</code> or Resume to start full execution.</p>
+    <div class="note" style="margin-top:8px;">
+      <strong>Tip:</strong> To flash without the debugger attached, use <strong style="color:var(--text)">Run → Run</strong> instead of Run → Debug.
+    </div>
+  </div>
+</div>
+
+<p style="margin-top:8px;"><strong style="color:var(--text)">Requirements:</strong>
+<a href="https://www.st.com/en/development-tools/stm32cubeide.html" style="color:var(--accent2);">STM32CubeIDE</a>
+(includes arm-none-eabi-gcc and OpenOCD) · STM32F411 Nucleo · USB Mini-B cable</p>
+
+<hr>
+
+<p style="text-align:center;font-family:var(--mono);font-size:11px;color:var(--text3);letter-spacing:0.06em;">
+  Built on ARM Cortex-M4 · STM32F411 Nucleo · GNU arm-none-eabi-gcc · OpenOCD · STM32CubeIDE
+</p>
+
+</body>
+</html>
