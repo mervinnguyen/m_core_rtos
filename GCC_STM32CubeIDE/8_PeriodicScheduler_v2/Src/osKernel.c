@@ -213,3 +213,13 @@ void osSchedulerRoundRobin(void){
 
 	currentPt = currentPt->next;
 }
+
+void tim2_1hz_interrupt_init(void){
+	/*Enable clock access to tim2*/
+	/*Set timer prescaler*/
+	/*Set auto reload value*/
+	/*Clear counter*/
+	/*Enable timer*/
+	/*Enable timer interrupt*/
+	/*Enbale timer interrupt*/
+}
