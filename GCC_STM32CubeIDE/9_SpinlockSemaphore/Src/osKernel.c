@@ -250,3 +250,13 @@ void osSemaphoreSet(int32_t *semaphore){
 	*semaphore += 1;
 	__enable_irq();
 }
+
+void osSemaphoreWait(int32_t *semaphore){
+	__disable_irq();
+	while(*semaphore <= 0){
+		__disable_irq();
+		__enable_irq();
+	}
+	*semaphore -= 1;
+	__enable_irq();
+}
