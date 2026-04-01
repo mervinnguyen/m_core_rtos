@@ -13,6 +13,7 @@ void osKernelInit(void);
 void osThreadYield(void);
 void task3(void);
 void osSchedulerRoundRobin(void);
+void tim2_1hz_interrupt_init(void);
 
 
 #endif

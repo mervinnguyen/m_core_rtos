@@ -11,6 +11,10 @@
 #define CTRL_COUNTFLAG	(1u << 16)
 #define SYSTICK_RST		0
 
+#define TIM2EN			(1u << 0)
+#define CR1_CEN			(1u << 0)
+#define DIER_UIE		(1u << 0)
+
 #define INTCTRL			(*((volatile uint32_t*)0xE000ED04))
 #define PENDSTSET		(1u << 26)
 
@@ -216,10 +220,23 @@ void osSchedulerRoundRobin(void){
 
 void tim2_1hz_interrupt_init(void){
 	/*Enable clock access to tim2*/
+	RCC -> APB1ENR |= TIM2EN;
+
 	/*Set timer prescaler*/
+	TIM2 -> PSC = 1600 - 1;		/*16 000 000 / 1600 = 10 000*/
+
 	/*Set auto reload value*/
+	TIM2 -> ARR = 10000 - 1;	/*10 0000 / 10 000 = 1*/
+
 	/*Clear counter*/
+	TIM2 -> CNT = 0;
+
 	/*Enable timer*/
+	TIM2 -> CR1 = CR1_CEN;
+
 	/*Enable timer interrupt*/
+	TIM2 -> DIER |= DIER_UIE;
+
 	/*Enbale timer interrupt*/
+	NVIC_EnableIRQ(TIM2_IRQn);
 }
