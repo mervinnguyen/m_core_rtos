@@ -29,7 +29,7 @@ void task1(void){
 		osSemaphoreWait(&semaphore1);
 		//Task1_Profiler++;
 		motor_run();
-		//osSemaphoreSet(&semaphore1);
+		osSemaphoreSet(&semaphore1);
 	}
 }
 

@@ -237,7 +237,7 @@ void tim2_1hz_interrupt_init(void){
 	/*Enable timer interrupt*/
 	TIM2 -> DIER |= DIER_UIE;
 
-	/*Enbale timer interrupt*/
+	/*Enable timer interrupt*/
 	NVIC_EnableIRQ(TIM2_IRQn);
 }
 
