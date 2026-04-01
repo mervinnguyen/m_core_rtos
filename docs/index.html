@@ -476,11 +476,11 @@
   </div>
 
   <h1><span class="accent">M-Core RTOS</span></h1>
-  <p class="subtitle">// A light weight Real-Time Operating System built from scratch on ARM Cortex-M</p>
+  <p class="subtitle">// A Real-Time Operating System built from scratch on ARM Cortex-M</p>
   <p class="hero-desc">
     A ground-up implementation of a preemptive real-time operating system targeting ARM Cortex-M
-    microcontrollers. Implements round-robin, cooperative, and periodic schedulers with PendSV-based
-    context switching, a thread control block subsystem, and binary semaphore synchronization —
+    MCUs. Implements round-robin, cooperative, and periodic schedulers with PendSV-based
+    context switching, a thread control block subsystem, and binary semaphore synchronization,
     built directly on top of SysTick and NVIC hardware primitives.
   </p>
   <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
@@ -571,8 +571,8 @@ production-grade embedded OS design.</p>
 <h2>Scheduler Execution Flow</h2>
 
 <p>Each scheduler tick is fully deterministic. SysTick fires at a fixed 1 ms interval, increments
-the system counter, triggers the scheduler decision, and defers the actual register swap to PendSV
-— the lowest-priority interrupt on the system, ensuring context switches never interrupt critical ISRs.</p>
+the system counter, triggers the scheduler decision, and defers the actual register swap to PendSV, 
+the lowest-priority interrupt on the system, ensuring context switches never interrupt critical ISRs.</p>
 
 <div class="flow">
   <div class="flow-step active">SysTick IRQ<br><span style="font-size:10px;opacity:0.6">1 ms</span></div>
@@ -587,7 +587,7 @@ the system counter, triggers the scheduler decision, and defers the actual regis
 </div>
 
 <p style="margin-top:16px;">The separation of scheduling logic (SysTick) from the stack swap (PendSV)
-is a critical Cortex-M design pattern — it allows the scheduler to run at a higher priority than the
+is a critical Cortex-M design pattern since it allows the scheduler to run at a higher priority than the
 context switch, guaranteeing that interrupt latency is never inflated by task register saves.</p>
 
 
@@ -757,7 +757,7 @@ correct context switching from the PendSV handler.</p>
   <div class="feature-card">
     <span class="feature-icon badge-orange">PendSV</span>
     <div class="feature-title">Deferred Context Switching</div>
-    <p class="feature-desc">Context switches are deferred to PendSV — lowest-priority exception
+    <p class="feature-desc">Context switches are deferred to PendSV which is the lowest-priority exception
     on Cortex-M. Guarantees ISR latency is never inflated by task register saves mid-interrupt.</p>
   </div>
   <div class="feature-card">
@@ -794,7 +794,7 @@ correct context switching from the PendSV handler.</p>
 
 <p>The RTOS launch takes control from <code>main()</code> immediately after thread registration.
 It initializes the first task's PSP, drops to unprivileged thread mode, and triggers the first
-context switch — at which point the kernel never returns to <code>main()</code>.</p>
+context switch at which point the kernel never returns to <code>main()</code>.</p>
 
 <div class="flow" style="flex-wrap:wrap;gap:6px;">
   <div class="flow-step">Reset Handler</div>
