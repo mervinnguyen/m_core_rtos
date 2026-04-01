@@ -8,7 +8,7 @@
 
 typedef uint32_t TaskProfiler;
 
-TaskProfiler Task0_Profiler, Task1_Profiler, Task2_Profiler;
+TaskProfiler Task0_Profiler, Task1_Profiler, Task2_Profiler, pTask1_Profiler;
 
 void motor_run(void);
 void motor_stop(void);
@@ -32,6 +32,12 @@ void task1(void){
 void task2(void){
 	while(1){
 		Task2_Profiler++;
+	}
+}
+
+void task3(void){
+	while(1){
+		pTask1_Profiler++;
 	}
 }
 

@@ -3,7 +3,8 @@
 #include <stdint.h>
 #include "stm32f4xx.h"
 
-#define PERIOD    100
+#define PERIOD    100		/*Period is 100 *quanta, e.g. quanta = 10 -> 100*10 = 1000*/
+#define SR_UIF		(1u << 0)
 
 void osKernelStackInit(int i);
 void osKernelLaunch(uint32_t quanta);

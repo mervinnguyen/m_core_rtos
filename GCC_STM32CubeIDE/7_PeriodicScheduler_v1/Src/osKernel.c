@@ -14,7 +14,7 @@
 #define INTCTRL			(*((volatile uint32_t*)0xE000ED04))
 #define PENDSTSET		(1u << 26)
 
-uint32_t periodic_tick ;
+uint32_t period_tick;
 
 uint32_t MILLIS_PRESCALER;
 
@@ -138,6 +138,12 @@ __attribute__((naked)) void SysTick_Handler(void){
 	__asm("BL		osSchedulerRoundRobin");
 	__asm("POP		{R0, LR}");
 
+	/*R1 = currentPT i.e. New Thread*/
+	__asm("LDR		R1, [R0]");
+
+	/*sp = currentPt->stackPt*/
+	__asm("LDR		SP, [R1]");
+
 	/*Store r1 at address equals r0, i.e. currentPt = r1*/
 	__asm("STR R1, [R0]");
 
@@ -205,5 +211,5 @@ void osSchedulerRoundRobin(void){
 		period_tick = 0;
 	}
 
-	currentPt = currentPt->nextPt;
+	currentPt = currentPt->next;
 }

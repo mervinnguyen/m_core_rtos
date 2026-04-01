@@ -8,7 +8,7 @@
 
 typedef uint32_t TaskProfiler;
 
-TaskProfiler Task0_Profiler, Task1_Profiler, Task2_Profiler, pTask1_Profiler;
+TaskProfiler Task0_Profiler, Task1_Profiler, Task2_Profiler, pTask1_Profiler, pTask2_Profiler;
 
 void motor_run(void);
 void motor_stop(void);
@@ -46,6 +46,9 @@ int main(){
 	/*Initialize UART*/
 	uart_tx_init();
 
+	/*Initialize hardware timer*/
+	tim2_1hz_interrupt_init();
+
 	/* Initialize Kernel*/
 	osKernelInit();
 
@@ -59,6 +62,15 @@ int main(){
 
 	}
 }
+
+void TIM2_IRQHandler(){
+	/*Clear update interrupt flag*/
+	TIM2 -> SR &= ~SR_UIF;
+
+	/*Do something*/
+	pTask2_Profiler++;
+}
+
 void motor_run(void){
 	printf("Motor is starting ...\n");
 }
