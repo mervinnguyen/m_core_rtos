@@ -1,10 +1,4 @@
-00:43:39 **** Clean-only build of configuration Debug for project 9_SpinlockSemaphore ****
-make -j24 clean 
-rm -rf ./Startup/startup_stm32f411retx.d ./Startup/startup_stm32f411retx.o
-rm -rf ./Src/led.cyclo ./Src/led.d ./Src/led.o ./Src/led.su ./Src/main.cyclo ./Src/main.d ./Src/main.o ./Src/main.su ./Src/osKernel.cyclo ./Src/osKernel.d ./Src/osKernel.o ./Src/osKernel.su ./Src/syscalls.cyclo ./Src/syscalls.d ./Src/syscalls.o ./Src/syscalls.su ./Src/sysmem.cyclo ./Src/sysmem.d ./Src/sysmem.o ./Src/sysmem.su ./Src/timebase.cyclo ./Src/timebase.d ./Src/timebase.o ./Src/timebase.su ./Src/uart.cyclo ./Src/uart.d ./Src/uart.o ./Src/uart.su
-rm -rf 9_SpinlockSemaphore.elf 9_SpinlockSemaphore.list 9_SpinlockSemaphore.map default.size.stdout
- 
-00:43:39 **** Build of configuration Debug for project 9_SpinlockSemaphore ****
+03:07:15 **** Build of configuration Debug for project 9_SpinlockSemaphore ****
 make -j24 all 
 arm-none-eabi-gcc -mcpu=cortex-m4 -g3 -DDEBUG -c -x assembler-with-cpp -MMD -MP -MF"Startup/startup_stm32f411retx.d" -MT"Startup/startup_stm32f411retx.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Startup/startup_stm32f411retx.o" "../Startup/startup_stm32f411retx.s"
 arm-none-eabi-gcc "../Src/led.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DSTM32F411xE -c -I../Inc -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Include" -I"C:/Users/mervi/OneDrive/Documents/m_core_rtos/GCC_STM32CubeIDE/0_led_driver/chip_headers/Device/ST/STM32F4xx/Include" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/led.d" -MT"Src/led.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/led.o"
@@ -20,7 +14,7 @@ Finished building target: 9_SpinlockSemaphore.elf
 arm-none-eabi-size  9_SpinlockSemaphore.elf 
 arm-none-eabi-objdump -h -S 9_SpinlockSemaphore.elf  > "9_SpinlockSemaphore.list"
    text	   data	    bss	    dec	    hex	filename
-   5136	     92	   6756	  11984	   2ed0	9_SpinlockSemaphore.elf
+   5144	     92	   6756	  11992	   2ed8	9_SpinlockSemaphore.elf
 Finished building: default.size.stdout
  
 Finished building: 9_SpinlockSemaphore.list

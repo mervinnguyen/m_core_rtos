@@ -19,7 +19,6 @@
 #define PENDSTSET		(1u << 26)
 
 uint32_t period_tick;
-
 uint32_t MILLIS_PRESCALER;
 
 typedef struct tcb {
@@ -61,22 +60,26 @@ void osKernelStackInit(int i){
 uint8_t osKernelAddThreads(void(*task0)(void), void(*task1)(void), void(*task2)(void)){
 	/*Disable global interrupts*/
 	__disable_irq();
+
 	tcbs[0].next = &tcbs[1];
 	tcbs[1].next = &tcbs[2];
 	tcbs[2].next = &tcbs[0];
 
 	/*Initialize stack for thread0*/
 	osKernelStackInit(0);
+
 	/*Initialize PC*/
 	TCB_STACK[0][STACKSIZE - 2] = (int32_t)(task0);
 
 	/*Initialize stack for thread1*/
 	osKernelStackInit(1);
+
 	/*Initialize PC*/
 	TCB_STACK[1][STACKSIZE - 2] = (int32_t)(task1);
 
 	/*Initialize stack for thread2*/
 	osKernelStackInit(2);
+
 	/*Initialize PC*/
 	TCB_STACK[2][STACKSIZE - 2] = (int32_t)(task2);
 
@@ -95,22 +98,22 @@ void osKernelInit(void){
 
 void osKernelLaunch(uint32_t quanta){
 	/*Reset systick*/
-	SysTick -> CTRL = SYSTICK_RST;
+	SysTick->CTRL = SYSTICK_RST;
 
 	/*Clear systick current value register */
 	SysTick->VAL = 0;
 
 	/*Load quanta */
-	SysTick -> LOAD = (quanta * MILLIS_PRESCALER) - 1;
+	SysTick->LOAD = (quanta * MILLIS_PRESCALER) - 1;
 
 	/* Set systick to low priority */
 	NVIC_SetPriority(SysTick_IRQn, 15);
 
 	/*Enable systick, select internal clock */
-	SysTick -> CTRL =  CTRL_CLCKSRC | CTRL_ENABLE;
+	SysTick->CTRL =  CTRL_CLCKSRC | CTRL_ENABLE;
 
 	/*Enable systick interrupt */
-	SysTick -> CTRL |= CTRL_TICKINT;
+	SysTick->CTRL |= CTRL_TICKINT;
 
 	/*Launch scheduler */
 	osSchedulerLaunch();
@@ -220,22 +223,22 @@ void osSchedulerRoundRobin(void){
 
 void tim2_1hz_interrupt_init(void){
 	/*Enable clock access to tim2*/
-	RCC -> APB1ENR |= TIM2EN;
+	RCC->APB1ENR |= TIM2EN;
 
 	/*Set timer prescaler*/
-	TIM2 -> PSC = 1600 - 1;		/*16 000 000 / 1600 = 10 000*/
+	TIM2->PSC = 1600 - 1;		/*16 000 000 / 1600 = 10 000*/
 
 	/*Set auto reload value*/
-	TIM2 -> ARR = 10000 - 1;	/*10 0000 / 10 000 = 1*/
+	TIM2->ARR = 10000 - 1;	/*10 0000 / 10 000 = 1*/
 
 	/*Clear counter*/
-	TIM2 -> CNT = 0;
+	TIM2->CNT = 0;
 
 	/*Enable timer*/
-	TIM2 -> CR1 = CR1_CEN;
+	TIM2->CR1 = CR1_CEN;
 
 	/*Enable timer interrupt*/
-	TIM2 -> DIER |= DIER_UIE;
+	TIM2->DIER |= DIER_UIE;
 
 	/*Enbale timer interrupt*/
 	NVIC_EnableIRQ(TIM2_IRQn);

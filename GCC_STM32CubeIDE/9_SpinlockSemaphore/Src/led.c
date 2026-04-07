@@ -8,8 +8,10 @@
 void led_init(void){
 	/* Enable clock access to led port (Port A) */
 	RCC -> AHB1ENR |= GPIO_EN;		//set to bit 0 to 1 to enable led port
+
 	/* Set led pin as output */
 	GPIOA -> MODER |= GPIO_OUT;		//set MODER to 1
+	
 	GPIOA -> MODER &= ~GPIO_OUT2;	//clear MODER bit (0)
 }
 

@@ -27,16 +27,14 @@ void task0(void){
 void task1(void){
 	while(1){
 		osSemaphoreWait(&semaphore1);
-		//Task1_Profiler++;
 		motor_run();
-		//osSemaphoreSet(&semaphore1);
+		osSemaphoreSet(&semaphore1);
 	}
 }
 
 void task2(void){
 	while(1){
 		osSemaphoreWait(&semaphore2);
-		//Task2_Profiler++;
 		valve_open();
 		osSemaphoreSet(&semaphore1);
 
@@ -69,15 +67,11 @@ int main(){
 
 	/*Set RoundRobin time quanta*/
 	osKernelLaunch(QUANTA);
-
-	while(1){
-
-	}
 }
 
 void TIM2_IRQHandler(){
 	/*Clear update interrupt flag*/
-	TIM2 -> SR &= ~SR_UIF;
+	TIM2->SR &= ~SR_UIF;
 
 	/*Do something*/
 	pTask2_Profiler++;

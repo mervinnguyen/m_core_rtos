@@ -42,19 +42,19 @@ uint32_t get_tick(void){
 
 void timebase_init(void){
 	/*Reload the timer with # of cycles per second*/
-	SysTick -> LOAD = ONE_SEC_LOAD - 1;		//set LOAD to 16 Mhz
+	SysTick->LOAD = ONE_SEC_LOAD - 1;		//set LOAD to 16 Mhz
 
 	/*Clear Systick current value register*/
-	SysTick -> VAL = 0;
+	SysTick->VAL = 0;
 
 	/*Select internal clock source*/
-	SysTick -> CTRL = CTRL_CLCKSRC;		//set clock control register (bit 2) to 1
+	SysTick->CTRL = CTRL_CLCKSRC;		//set clock control register (bit 2) to 1
 
 	/*Enable interrupt */
-	SysTick -> CTRL |= CTRL_TICKINT;
+	SysTick->CTRL |= CTRL_TICKINT;
 
 	/*Enable systick */
-	SysTick -> CTRL |= CTRL_ENABLE;
+	SysTick->CTRL |= CTRL_ENABLE;
 
 	/*Enable global interrupts*/
 	__enable_irq();
